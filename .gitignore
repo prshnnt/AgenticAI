@@ -216,3 +216,33 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Claude Code
+.claude/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-debug.log*
+.npm
+.yarn
+.pnp
+.pnp.js
+.testreport
+.nuxt
+.nvue
+.vuepress
+.dist
+.package
+.zip
+.npmrc
+.yarnrc
+.pnpm-lock.yaml
+.yarn.lock
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

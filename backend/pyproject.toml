@@ -1,0 +1,11 @@
+[project]
+name = "agenticai"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "deepagents>=0.6.1",
+    "dotenv>=0.9.9",
+    "tavily-python>=0.7.24",
+]
