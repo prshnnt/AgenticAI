@@ -5,7 +5,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     # App
-    APP_NAME: str = "LegalGPT API"
+    APP_NAME: str = "Agentic AI"
     VERSION: str = "0.1.0"
     DEBUG: bool = True
     
@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     
     # ChromaDB
     CHROMA_PERSIST_DIR: str = "./chroma_db"
-    CHROMA_COLLECTION_NAME: str = "legal_documents"
+    CHROMA_COLLECTION_NAME: str = "user_documents"
     
     # Auth
     SECRET_KEY: str = "your-secret-key-change-in-production"
