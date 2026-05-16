@@ -1,18 +1,61 @@
-# React + Vite
+# AgentOS — AI Chat Interface
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A premium, production-grade AI chat interface built with **React** and **Vite**. AgentOS features a cinematic "Cold & Precise" aesthetic, designed for maximum focus and visual excellence.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 🌌 Main Chat Area
+- **Empty State**: Centered welcome screen with animated branding and suggested prompt cards.
+- **Message Thread**: Fluid scrollable conversation view with distinct user/assistant styles.
+- **Rich Rendering**: Full Markdown support including syntax-highlighted code blocks, lists, and bold text.
+- **Streaming Interaction**: Character-by-character response streaming with a blinking cursor.
+- **Message Actions**: Hover-revealed actions for "Copy", "Regenerate", and "Feedback" (Thumbs up/down).
 
-## React Compiler
+### 🛠️ Sidebar (Collapsible)
+- **Fluid Navigation**: Collapsible sidebar that shrinks to a slim icon-only toolbar.
+- **History Management**: Grouped conversation history (Today, Yesterday, Last 7 Days, Older).
+- **Contextual Actions**: Inline renaming, archiving, and deletion with smooth animations.
+- **Feature Hub**: Slide-in "More" panel for Artifacts, Workflows, MCP Servers, and Plugins.
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+### ⌨️ Advanced Input Bar
+- **Dynamic Textarea**: Auto-expanding multi-line input bar.
+- **Toolbox**: Popover for selectable tools (Web Search, Image Gen, Code Interpreter).
+- **Voice & Media**: Integrated file attachment system and pulsing voice recording state.
+- **Smart UI**: Context-aware Send/Stop button (switches during streaming).
 
-Note: This will impact Vite dev & build performances.
+## 🎨 Design System
+- **Aesthetic**: Dark Cinematic · Cold & Precise.
+- **Typography**: Space Grotesk (Display) & JetBrains Mono (Code).
+- **Styling**: Vanilla CSS Modules for encapsulated, high-performance styling.
+- **Tokens**: Fully variable-driven theming (colors, spacing, radius, shadows).
 
-## Expanding the ESLint configuration
+## 🚀 Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Prerequisites
+- Node.js (v18+)
+- npm / yarn
+
+### Installation
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+## 🏗️ Architecture
+The project follows a modular, component-based structure:
+- `Sidebar`: Navigation and history.
+- `ChatWindow`: Main thread and welcome logic.
+- `MessageBubble`: Content rendering and actions.
+- `InputBar`: Core interaction surface.
+- `ContextMenu`: Popover logic for list items.
+- `ToolsPicker`: Feature toggles.
+
+## 🛠️ Tech Stack
+- **Framework**: React 19
+- **Bundler**: Vite 8
+- **Icons**: Lucide React
+- **Fonts**: @fontsource (Space Grotesk, JetBrains Mono)
+- **Styling**: CSS Modules
