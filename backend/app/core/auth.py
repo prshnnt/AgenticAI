@@ -7,7 +7,15 @@ from config import settings
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against a hash."""
+    """Verify a plain password against its hashed hash.
+
+    Args:
+        plain_password: The plain text password to verify.
+        hashed_password: The hashed password string (or bytes) to check against.
+
+    Returns:
+        True if the password matches the hash, False otherwise.
+    """
     return bcrypt.checkpw(
         plain_password.encode("utf-8"),
         hashed_password.encode("utf-8") if isinstance(hashed_password, str) else hashed_password,
@@ -15,7 +23,14 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def get_password_hash(password: str) -> str:
-    """Hash a password using bcrypt."""
+    """Hash a plain text password using bcrypt with a generated salt.
+
+    Args:
+        password: The plain text password to hash.
+
+    Returns:
+        A bcrypt hashed password string.
+    """
     salt = bcrypt.gensalt(rounds=12)
     return bcrypt.hashpw(password.encode("utf-8"), salt).decode("utf-8")
 
