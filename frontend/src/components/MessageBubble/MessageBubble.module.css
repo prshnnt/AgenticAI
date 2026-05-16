@@ -1,0 +1,211 @@
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 20px;
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+  animation: msgIn 0.22s var(--ease-out) both;
+  position: relative;
+}
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.row:hover .actions { opacity: 1; }
+
+/* User row — align right */
+.userRow {
+  flex-direction: row-reverse;
+  gap: 0;
+}
+
+/* Assistant row — align left */
+.assistantRow { flex-direction: row; }
+
+/* Avatar */
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #2a5bdb 0%, #4f8eff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  box-shadow: 0 2px 8px rgba(79,142,255,0.3);
+}
+
+/* Bubbles */
+.bubble {
+  position: relative;
+  max-width: 72%;
+}
+
+.userBubble {
+  background: linear-gradient(135deg, #2a5bdb 0%, #4f8eff 100%);
+  border-radius: 18px 4px 18px 18px;
+  padding: 10px 14px;
+  box-shadow: 0 2px 12px rgba(79,142,255,0.25);
+}
+
+.assistantBubble {
+  background: transparent;
+  border-radius: 4px 18px 18px 18px;
+  padding: 2px 0;
+}
+
+.userText {
+  font-size: var(--text-sm);
+  color: #fff;
+  line-height: var(--leading-normal);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Markdown content */
+.mdContent {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  line-height: var(--leading-normal);
+  word-break: break-word;
+}
+
+.mdContent :global(p) {
+  margin-bottom: 0.6em;
+}
+
+.mdContent :global(p:last-child) {
+  margin-bottom: 0;
+}
+
+.mdContent :global(strong) {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+.mdContent :global(em) {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.mdContent :global(.md-list) {
+  padding-left: 18px;
+  margin: 6px 0;
+}
+
+.mdContent :global(.md-list li) {
+  margin-bottom: 3px;
+  color: var(--color-text-secondary);
+}
+
+.mdContent :global(.md-inline-code) {
+  font-family: var(--font-mono);
+  font-size: 0.82em;
+  background: rgba(79,142,255,0.12);
+  color: var(--color-accent);
+  padding: 1px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(79,142,255,0.2);
+}
+
+.mdContent :global(.md-code-wrap) {
+  margin: 10px 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+}
+
+.mdContent :global(.md-code-lang) {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--color-accent);
+  padding: 6px 12px;
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+  text-transform: uppercase;
+}
+
+.mdContent :global(.md-pre) {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+}
+
+.mdContent :global(.md-pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  line-height: 1.65;
+}
+
+/* Streaming cursor */
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: var(--color-accent);
+  margin-left: 2px;
+  border-radius: 1px;
+  vertical-align: middle;
+  animation: blink 0.9s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Attachments */
+.attachments { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.attachment {
+  font-size: var(--text-xs);
+  padding: 3px 8px;
+  background: rgba(79,142,255,0.1);
+  border: 1px solid rgba(79,142,255,0.2);
+  border-radius: var(--radius-full);
+  color: var(--color-accent);
+}
+
+/* Action toolbar */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 6px;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.actionBtn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.actionBtn:hover { background: var(--color-surface-2); color: var(--color-text-primary); }
+.liked    { color: var(--color-accent) !important; }
+.disliked { color: var(--color-danger) !important; }
+
+.divider {
+  width: 1px;
+  height: 14px;
+  background: var(--color-border);
+  margin: 0 2px;
+}
+
+@media (max-width: 768px) {
+  .row { padding: 4px 12px; }
+  .bubble { max-width: 88%; }
+}
