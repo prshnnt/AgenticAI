@@ -1,0 +1,186 @@
+.wrapper {
+  padding: 12px 16px 14px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+
+/* Attachments strip */
+.attachRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 4px;
+}
+
+.attachChip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  background: rgba(79,142,255,0.1);
+  border: 1px solid rgba(79,142,255,0.25);
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+}
+
+.attachChip button {
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--color-accent);
+  opacity: 0.7;
+  transition: opacity 0.12s ease;
+}
+
+.attachChip button:hover { opacity: 1; }
+
+/* Main bar */
+.bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 8px 8px 8px 10px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+}
+
+.bar:focus-within,
+.barFocused {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.1), 0 4px 24px rgba(0,0,0,0.3);
+}
+
+/* Left icons */
+.leftIcons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.toolsWrap { position: relative; }
+
+.iconBtn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  position: relative;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.iconBtn:hover { background: var(--color-surface-2); color: var(--color-text-primary); }
+.iconBtnActive { background: var(--color-accent-dim); color: var(--color-accent); }
+
+/* Recording state */
+.recording {
+  color: var(--color-danger) !important;
+  background: rgba(255,95,87,0.1) !important;
+  animation: recordPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes recordPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,95,87,0.4); }
+  50%       { box-shadow: 0 0 0 6px rgba(255,95,87,0); }
+}
+
+.recordDot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-danger);
+  animation: blink 0.8s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* Textarea */
+.textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  font-family: var(--font-body);
+  line-height: var(--leading-normal);
+  padding: 5px 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  align-self: center;
+}
+
+.textarea::placeholder { color: var(--color-text-muted); }
+
+/* Send button */
+.sendBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, #2a5bdb 0%, #4f8eff 100%);
+  color: #fff;
+  flex-shrink: 0;
+  transition: transform 0.15s var(--ease-out), box-shadow 0.15s ease, background 0.15s ease;
+  box-shadow: 0 2px 10px rgba(79,142,255,0.35);
+}
+
+.sendBtn:hover:not(:disabled) {
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(79,142,255,0.5);
+}
+
+.sendBtn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.sendDisabled {
+  background: var(--color-surface-2);
+  box-shadow: none;
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.stopBtn {
+  background: linear-gradient(135deg, #c0392b 0%, #ff5f57 100%);
+  box-shadow: 0 2px 10px rgba(255,95,87,0.35);
+}
+
+.stopBtn:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgba(255,95,87,0.5);
+}
+
+/* Hint */
+.hint {
+  text-align: center;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+  opacity: 0.5;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 600px) {
+  .wrapper { padding: 8px 10px 10px; }
+  .hint { display: none; }
+}
