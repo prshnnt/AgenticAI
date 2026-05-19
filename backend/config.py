@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     GROQ_API_KEY:str = "your-groq-api-key"
     TAVILY_API_KEY:str = "your-tavily-api-key"
     OLLAMA_API_KEY:str = "your-ollama-api-key"
+    REDIS_API_KEY_AGENT_MEMORY: str = "your-redis-api-key"
     
     # CORS
     CORS_ORIGINS: list = ["*"]

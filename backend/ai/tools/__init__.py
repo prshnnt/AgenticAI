@@ -1,1 +1,1 @@
-from backend.ai.tools.websearch import websearch
+from .websearch import websearch
