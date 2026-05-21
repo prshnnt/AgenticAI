@@ -1,10 +1,11 @@
 import os
 from typing import Literal
 from tavily import TavilyClient
+from langchain.tools import tool
 
 tavily_client = TavilyClient(api_key=os.environ["TAVILY_API_KEY"])
 
-
+@tool
 def websearch(
     query: str,
     max_results: int = 5,
