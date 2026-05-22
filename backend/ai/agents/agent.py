@@ -18,42 +18,22 @@ tools = [
     websearch
 ]
 
-
-def build_models():
+def get_model():
     """
-    Build and return a dictionary of reusable models.
+    Get the model based on the model name.
     """
-    # Using ChatOllama for all roles based on your config, 
-    # you can easily swap these with ChatOpenAI or others if needed.
-    return {
-        "planner": ChatOllama(
-            model=settings.ollama_model,
-            base_url=settings.ollama_base_url,
-            temperature=0
-        ),
-        "coder": ChatOllama(
-            model=settings.ollama_model,
-            base_url=settings.ollama_base_url,
-            temperature=0
-        ),
-        "debugger": ChatOllama(
-            model=settings.ollama_model,
-            base_url=settings.ollama_base_url,
-            temperature=0
-        ),
-        "summarizer": ChatOllama(
-            model=settings.ollama_model,
-            base_url=settings.ollama_base_url,
-            temperature=0
-        )
-    }
-
+    return ChatOllama(
+        model=settings.ollama_model,
+        base_url=settings.ollama_base_url,
+        temperature=0
+    )
+    
 
 class DeepAgentService:
 
     def __init__(self):
         # Reusable models
-        self.models = build_models()
+        self.models = get_model()
 
         # Reusable tools
         self.tools = tools
@@ -62,32 +42,11 @@ class DeepAgentService:
         # (Using InMemorySaver as a placeholder. Swap with AsyncRedisSaver/AsyncPostgresSaver as needed)
         self.checkpointer = InMemorySaver()
 
-        # Default chat model
-        self.chat_model = self.models["planner"]
+        # # Default chat model
+        # self.chat_model = self.models["planner"]
 
         # Reusable subagents
-        self.subagents = [
-            {
-                "name": "planner",
-                "description": "Handles architecture and planning",
-                "model": self.models["planner"]
-            },
-            {
-                "name": "coder",
-                "description": "Writes and edits code",
-                "model": self.models["coder"]
-            },
-            {
-                "name": "debugger",
-                "description": "Fixes bugs and exceptions",
-                "model": self.models["debugger"]
-            },
-            {
-                "name": "summarizer",
-                "description": "Summarizes long outputs and conversations",
-                "model": self.models["summarizer"]
-            }
-        ]
+        self.subagents = []
 
         # Build ONCE
         self.agent = self._build_agent()

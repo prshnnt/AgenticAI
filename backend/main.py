@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
-from app.db.session import init_db
+from app.database.session import init_db
 from app.api import auth
 import os
 

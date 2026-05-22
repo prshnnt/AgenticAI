@@ -9,7 +9,7 @@ from pathlib import Path
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from app.db.session import Base, engine, SessionLocal 
+from app.database.session import Base, engine, SessionLocal 
 from app.database.models import User
 from app.core.auth import get_password_hash
 
