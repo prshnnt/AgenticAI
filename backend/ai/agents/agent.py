@@ -1,17 +1,31 @@
 import os
 import sys
-
 from dotenv import load_dotenv
-load_dotenv()
+from typing import AsyncGenerator, Dict, List, Any, Optional
+from datetime import datetime, timezone
 
 from langchain_ollama import ChatOllama
-from langchain_core.tools import tool
 from langgraph.checkpoint.memory import InMemorySaver
 from deepagents import create_deep_agent
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
+
 from config import settings
 from ai.tools import websearch
+from ai.database.models import ChatThread
 
+load_dotenv()
 SYSTEM_PROMPT = "You are a helpful AI assistant."
+
+class StreamChunk(BaseModel):
+    """A chunk of streamed response."""
+    thread_id: Optional[str|int] = Field(None, description="Thread ID")
+    type: str = Field(..., description="Type of chunk: 'start', 'content', 'tool_call', 'tool_result', 'end', 'error'")
+    content: Optional[str] = Field(None, description="Content for content chunks")
+    tool_name: Optional[str] = Field(None, description="Tool name for tool_call chunks")
+    tool_input: Optional[Dict[str, Any]] = Field(None, description="Tool input for tool_call chunks")
+    tool_output: Optional[str] = Field(None, description="Tool output for tool_result chunks")
+    checkpointer_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
 
 # --- Custom Tools ---
 tools = [
@@ -63,11 +77,19 @@ class DeepAgentService:
     async def stream(
         self,
         message: str,
-        thread_id: str
-    ):
+        thread: ChatThread,
+        db: Session
+    ) -> AsyncGenerator[str, None]:
+        start_chunk = StreamChunk(
+            type="start",
+            thread_id=thread.id,
+            content=message,
+            checkpointer_metadata={"timestamp": datetime.now(timezone.utc).isoformat()}
+        )
+        yield f"data: {start_chunk.model_dump_json()}\n\n"
         config = {
             "configurable": {
-                "thread_id": thread_id
+                "thread_id": thread.id
             }
         }
 
