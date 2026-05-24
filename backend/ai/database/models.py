@@ -1,4 +1,5 @@
 from app.database.session import Base
+from app.database.models import User
 import enum
 
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, JSON, Enum as SQLEnum
@@ -24,7 +25,6 @@ class ChatThread(Base):
 class MessageRole(enum.Enum):
     HUMAN = "human"
     AI = "ai"
-    TOOL = "tool"
 
 
 class ChatMessage(Base):
@@ -34,10 +34,6 @@ class ChatMessage(Base):
     thread_id = Column(Integer, ForeignKey("chat_threads.id"), nullable=False)
     role = Column(SQLEnum(MessageRole), nullable=False)
     content = Column(Text, nullable=False)
-
-    # For tool calls
-    tool_name = Column(String(100), nullable=True)
-    tool_data = Column(JSON, nullable=True)
 
     created_at = Column(DateTime, default=datetime.utcnow)
 

@@ -27,10 +27,12 @@ class StreamChunk(BaseModel):
     tool_output: Optional[str] = Field(None, description="Tool output for tool_result chunks")
     checkpointer_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
 
-# --- Custom Tools ---
-tools = [
-    websearch
-]
+
+def get_tools():
+    """
+    Get the tools based on the available modules.
+    """
+    return [websearch]
 
 def get_model():
     """
@@ -50,7 +52,7 @@ class DeepAgentService:
         self.models = get_model()
 
         # Reusable tools
-        self.tools = tools
+        self.tools = get_tools()
 
         # Reusable persistent checkpointer 
         # (Using InMemorySaver as a placeholder. Swap with AsyncRedisSaver/AsyncPostgresSaver as needed)
