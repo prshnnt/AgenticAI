@@ -1,40 +1,28 @@
 import { useState, useCallback } from 'react';
 import { Copy, RotateCcw, ThumbsUp, ThumbsDown, Zap, Check } from 'lucide-react';
+import { Marked } from 'marked';
 import styles from './MessageBubble.module.css';
 
-// Lightweight markdown parser
+// Create a custom Marked instance to render elements with styles matching the design system
+const customMarked = new Marked({
+  gfm: true,
+  breaks: true,
+  renderer: {
+    code(token) {
+      const code = token.text || '';
+      const lang = token.lang || 'code';
+      const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return `<div class="md-code-wrap"><div class="md-code-lang">${lang}</div><pre class="md-pre"><code>${esc(code.trim())}</code></pre></div>`;
+    },
+    codespan(token) {
+      return `<code class="md-inline-code">${token.text}</code>`;
+    }
+  }
+});
+
 function parseMarkdown(text) {
-  // Escape HTML
-  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-  // Code blocks
-  let html = text.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
-    `<div class="md-code-wrap"><div class="md-code-lang">${lang || 'code'}</div><pre class="md-pre"><code>${esc(code.trim())}</code></pre></div>`
-  );
-
-  // Inline code
-  html = html.replace(/`([^`]+)`/g, '<code class="md-inline-code">$1</code>');
-
-  // Bold
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-
-  // Italic
-  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-
-  // Unordered list
-  html = html.replace(/^- (.+)/gm, '<li>$1</li>');
-  html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul class="md-list">$&</ul>');
-
-  // Paragraphs (double newline → paragraph break)
-  html = html.replace(/\n{2,}/g, '</p><p>');
-  // Single newlines inside prose
-  html = html.replace(/\n/g, '<br/>');
-  html = `<p>${html}</p>`;
-
-  // Clean up empty paragraphs
-  html = html.replace(/<p><\/p>/g, '');
-
-  return html;
+  if (!text) return '';
+  return customMarked.parse(text);
 }
 
 export default function MessageBubble({ message, isStreaming }) {
