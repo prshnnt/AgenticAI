@@ -8,10 +8,10 @@ from ai.database.models import (
     ChatThread
 )
 
-class ChatService:
+class ChatThreadService:
 
     @staticmethod
-    def create_chat(
+    def create_thread(
         db:Session,
         user:User,
         title:Optional[str]=None
@@ -27,20 +27,20 @@ class ChatService:
         return thread
     
     @staticmethod
-    def get_chat_by_id(
+    def get_thread_by_id(
         db:Session,
-        chat_id:int,
+        thread_id:int,
         user_id:int
     ) -> Optional[ChatThread]:
         return (
             db.query(ChatThread).filter(
-                ChatThread.id == chat_id,
+                ChatThread.id == thread_id,
                 ChatThread.user_id == user_id
             ).first()
         )
 
     @staticmethod
-    def list_chats(
+    def list_threads(
         db:Session,
         user:User,
         skip:int=0,
@@ -56,17 +56,17 @@ class ChatService:
         )
     
     @staticmethod
-    def delete_chat(
+    def delete_thread(
         db:Session,
-        chat_id:int,
+        thread_id:int,
         user_id:int
     ) -> bool:
-        chat = db.query(ChatThread).filter(
-            ChatThread.id == chat_id,
+        thread = db.query(ChatThread).filter(
+            ChatThread.id == thread_id,
             ChatThread.user_id == user_id
         ).first()
-        if chat:
-            db.delete(chat)
+        if thread:
+            db.delete(thread)
             db.commit()
             return True
         return False
