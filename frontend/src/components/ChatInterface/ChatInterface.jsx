@@ -1,85 +1,278 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import ChatWindow from '../ChatWindow/ChatWindow';
 import styles from './ChatInterface.module.css';
 
-const MOCK_CONVERSATIONS = [
-  { id: '1', title: 'Build a REST API with FastAPI', date: 'today' },
-  { id: '2', title: 'Explain transformer architecture', date: 'today' },
-  { id: '3', title: 'Debug React useEffect hook', date: 'yesterday' },
-  { id: '4', title: 'Write unit tests for Python code', date: 'yesterday' },
-  { id: '5', title: 'Design system tokens setup', date: 'week' },
-  { id: '6', title: 'Docker compose configuration', date: 'week' },
-  { id: '7', title: 'GraphQL vs REST comparison', date: 'week' },
-  { id: '8', title: 'Neural network from scratch', date: 'older' },
-  { id: '9', title: 'Kubernetes deployment guide', date: 'older' },
-];
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export default function ChatInterface({ onLogout }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeConvId, setActiveConvId] = useState(null);
-  const [conversations, setConversations] = useState(MOCK_CONVERSATIONS);
+  const [conversations, setConversations] = useState([]);
   const [messages, setMessages] = useState([]);
   const [streaming, setStreaming] = useState(false);
+
+  const activeReaderRef = useRef(null);
+  const token = localStorage.getItem('access_token');
+
+  // Fetch threads on mount
+  useEffect(() => {
+    if (!token) {
+      onLogout();
+      return;
+    }
+
+    const fetchThreads = async () => {
+      try {
+        const res = await fetch(`${API_BASE}/chats/threads`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (res.status === 401) {
+          onLogout();
+          return;
+        }
+        if (!res.ok) throw new Error('Failed to fetch threads');
+        const data = await res.json();
+        setConversations(data);
+      } catch (err) {
+        console.error('Error fetching threads:', err);
+      }
+    };
+
+    fetchThreads();
+  }, [token, onLogout]);
+
+  // Clean up any streaming reader on unmount
+  useEffect(() => {
+    return () => {
+      if (activeReaderRef.current) {
+        try {
+          activeReaderRef.current.cancel();
+        } catch (e) {
+          // ignore
+        }
+      }
+    };
+  }, []);
 
   const handleNewChat = useCallback(() => {
     setActiveConvId(null);
     setMessages([]);
   }, []);
 
-  const handleSelectConv = useCallback((id) => {
+  const handleSelectConv = useCallback(async (id) => {
     setActiveConvId(id);
-    setMessages([
-      { id: 'm1', role: 'user', content: conversations.find(c => c.id === id)?.title || '', ts: Date.now() - 60000 },
-      { id: 'm2', role: 'assistant', content: "I'm ready to help with that! Here's what I can do:\n\n- Provide detailed explanations\n- Write and review code\n- Debug issues step by step\n\nWhat would you like to explore first?", ts: Date.now() - 30000 },
-    ]);
-  }, [conversations]);
+    setMessages([]);
+
+    if (!id) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/chats/threads/${id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.status === 401) {
+        onLogout();
+        return;
+      }
+      if (!res.ok) throw new Error('Failed to fetch chat history');
+      const data = await res.json();
+      
+      const normalized = (data.messages || []).map(msg => ({
+        id: msg.id,
+        role: msg.role === 'human' ? 'user' : 'assistant',
+        content: msg.content,
+        ts: new Date(msg.created_at).getTime()
+      }));
+      
+      setMessages(normalized);
+    } catch (err) {
+      console.error('Error fetching chat history:', err);
+    }
+  }, [token, onLogout]);
 
   const handleSendMessage = useCallback(async (text, attachments) => {
     if (!text.trim() && attachments.length === 0) return;
 
-    const userMsg = { id: `m${Date.now()}`, role: 'user', content: text, attachments, ts: Date.now() };
+    // Add user message to state
+    const userMsgId = `user-${Date.now()}`;
+    const userMsg = { id: userMsgId, role: 'user', content: text, attachments, ts: Date.now() };
     setMessages(prev => [...prev, userMsg]);
 
-    if (!activeConvId) {
-      const newId = `conv-${Date.now()}`;
-      const title = text.slice(0, 48) + (text.length > 48 ? '…' : '');
-      setConversations(prev => [{ id: newId, title, date: 'today' }, ...prev]);
-      setActiveConvId(newId);
-    }
+    let currentConvId = activeConvId;
 
-    setStreaming(true);
-    // Simulate streaming response
-    const response = "That's a great question! Let me walk you through it.\n\nHere's a code example:\n\n```python\ndef hello_world():\n    print('Hello, World!')\n    return True\n```\n\nThis demonstrates the basic pattern. The function returns `True` on success, which you can use for **error handling** downstream.";
-    
-    const assistantMsg = { id: `m${Date.now() + 1}`, role: 'assistant', content: '', ts: Date.now() };
-    setMessages(prev => [...prev, assistantMsg]);
-
-    let i = 0;
-    const interval = setInterval(() => {
-      i += 3;
-      setMessages(prev => prev.map(m =>
-        m.id === assistantMsg.id ? { ...m, content: response.slice(0, i) } : m
-      ));
-      if (i >= response.length) {
-        clearInterval(interval);
-        setStreaming(false);
+    try {
+      // 1. Create a thread if none is active
+      if (!currentConvId) {
+        const title = text.slice(0, 48) + (text.length > 48 ? '…' : '');
+        const res = await fetch(`${API_BASE}/chats/threads`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ title })
+        });
+        if (res.status === 401) {
+          onLogout();
+          return;
+        }
+        if (!res.ok) throw new Error('Failed to create chat thread');
+        const newThread = await res.json();
+        
+        currentConvId = newThread.id;
+        setActiveConvId(currentConvId);
+        setConversations(prev => [newThread, ...prev]);
       }
-    }, 20);
-  }, [activeConvId]);
+
+      setStreaming(true);
+
+      // Add dummy assistant message shell
+      const assistantMsgId = `assistant-${Date.now()}`;
+      const assistantMsg = { id: assistantMsgId, role: 'assistant', content: '', ts: Date.now() };
+      setMessages(prev => [...prev, assistantMsg]);
+
+      // 2. Call send message endpoint & start streaming
+      const response = await fetch(`${API_BASE}/chats/threads/${currentConvId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ content: text })
+      });
+
+      if (response.status === 401) {
+        onLogout();
+        return;
+      }
+      if (!response.ok) throw new Error('Failed to send message');
+
+      const reader = response.body.getReader();
+      activeReaderRef.current = reader;
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let accumulatedContent = '';
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith('data: ')) continue;
+          const jsonStr = trimmed.slice(6);
+          try {
+            const eventData = JSON.parse(jsonStr);
+            if (eventData.type === 'content' && eventData.content) {
+              accumulatedContent += eventData.content;
+              setMessages(prev => prev.map(m =>
+                m.id === assistantMsgId ? { ...m, content: accumulatedContent } : m
+              ));
+            } else if (eventData.type === 'error') {
+              accumulatedContent += `\n[Error: ${eventData.content}]`;
+              setMessages(prev => prev.map(m =>
+                m.id === assistantMsgId ? { ...m, content: accumulatedContent } : m
+              ));
+            }
+          } catch (e) {
+            console.error('Error parsing SSE event data:', e);
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error sending message:', err);
+      // Append error message to UI
+      const errMsgId = `error-${Date.now()}`;
+      setMessages(prev => [...prev, {
+        id: errMsgId,
+        role: 'assistant',
+        content: `Error: ${err.message || 'Something went wrong. Please check connection and try again.'}`,
+        ts: Date.now()
+      }]);
+    } finally {
+      setStreaming(false);
+      activeReaderRef.current = null;
+      
+      // Update thread order/time in conversations list
+      if (currentConvId) {
+        setConversations(prev => {
+          const idx = prev.findIndex(c => c.id === currentConvId);
+          if (idx !== -1) {
+            const updated = { ...prev[idx], updated_at: new Date().toISOString() };
+            const rest = prev.filter(c => c.id !== currentConvId);
+            return [updated, ...rest];
+          }
+          return prev;
+        });
+      }
+    }
+  }, [activeConvId, token, onLogout]);
 
   const handleStopStreaming = useCallback(() => {
+    if (activeReaderRef.current) {
+      try {
+        activeReaderRef.current.cancel();
+      } catch (e) {
+        console.error('Failed to cancel stream reader', e);
+      }
+      activeReaderRef.current = null;
+    }
     setStreaming(false);
   }, []);
 
-  const handleRenameConv = useCallback((id, newTitle) => {
-    setConversations(prev => prev.map(c => c.id === id ? { ...c, title: newTitle } : c));
-  }, []);
+  const handleRenameConv = useCallback(async (id, newTitle) => {
+    try {
+      const res = await fetch(`${API_BASE}/chats/threads/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ title: newTitle })
+      });
+      if (res.status === 401) {
+        onLogout();
+        return;
+      }
+      if (!res.ok) throw new Error('Failed to rename thread');
+      
+      setConversations(prev => prev.map(c => c.id === id ? { ...c, title: newTitle } : c));
+    } catch (err) {
+      console.error('Error renaming thread:', err);
+    }
+  }, [token, onLogout]);
 
-  const handleDeleteConv = useCallback((id) => {
-    setConversations(prev => prev.filter(c => c.id !== id));
-    if (activeConvId === id) { setActiveConvId(null); setMessages([]); }
-  }, [activeConvId]);
+  const handleDeleteConv = useCallback(async (id) => {
+    try {
+      const res = await fetch(`${API_BASE}/chats/threads/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (res.status === 401) {
+        onLogout();
+        return;
+      }
+      if (!res.ok) throw new Error('Failed to delete thread');
+
+      setConversations(prev => prev.filter(c => c.id !== id));
+      if (activeConvId === id) {
+        setActiveConvId(null);
+        setMessages([]);
+      }
+    } catch (err) {
+      console.error('Error deleting thread:', err);
+    }
+  }, [activeConvId, token, onLogout]);
 
   return (
     <div className={styles.layout}>

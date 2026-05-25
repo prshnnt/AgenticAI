@@ -18,9 +18,39 @@ const EXPLORER_ITEMS = [
 
 function groupConversations(convs) {
   const groups = { today: [], yesterday: [], week: [], older: [] };
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  const yesterdayStart = new Date(todayStart);
+  yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+  
+  const weekStart = new Date(todayStart);
+  weekStart.setDate(weekStart.getDate() - 7);
+
   convs.forEach(c => {
-    if (groups[c.date] !== undefined) groups[c.date].push(c);
-    else groups.older.push(c);
+    if (c.date && groups[c.date] !== undefined) {
+      groups[c.date].push(c);
+      return;
+    }
+    
+    const ts = c.updated_at || c.created_at;
+    if (!ts) {
+      groups.older.push(c);
+      return;
+    }
+    
+    const date = new Date(ts);
+    if (isNaN(date.getTime())) {
+      groups.older.push(c);
+    } else if (date >= todayStart) {
+      groups.today.push(c);
+    } else if (date >= yesterdayStart) {
+      groups.yesterday.push(c);
+    } else if (date >= weekStart) {
+      groups.week.push(c);
+    } else {
+      groups.older.push(c);
+    }
   });
   return groups;
 }

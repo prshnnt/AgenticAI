@@ -80,6 +80,27 @@ def delete_thread(
     ThreadService.delete_thread(db=db,thread=thread)
     return None
 
+@router.patch("/threads/{thread_id}", response_model=ChatThreadResponse)
+def rename_thread(
+    thread_id: int,
+    thread_data: ChatThreadCreate,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Rename/update a chat thread.
+    """
+    thread = ThreadService.get_thread_by_id(db=db, thread_id=thread_id, user_id=user.id)
+    if not thread:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Chat thread not found"
+        )
+    thread.title = thread_data.title
+    db.commit()
+    db.refresh(thread)
+    return thread
+
 @router.post("/threads/{thread_id}")
 async def send_message(
     thread_id: int,

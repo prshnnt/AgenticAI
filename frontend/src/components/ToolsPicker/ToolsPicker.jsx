@@ -3,10 +3,10 @@ import { Globe, ImageIcon, Code2, Database, X } from 'lucide-react';
 import styles from './ToolsPicker.module.css';
 
 const TOOLS = [
-  { id: 'web-search',  icon: Globe,     label: 'Web Search',       desc: 'Search the internet' },
-  { id: 'image-gen',   icon: ImageIcon, label: 'Image Generation',  desc: 'Create images with AI' },
-  { id: 'code-interp', icon: Code2,     label: 'Code Interpreter',  desc: 'Run & analyze code' },
-  { id: 'data-store',  icon: Database,  label: 'Data Store',        desc: 'Query your data' },
+  { id: 'web-search', icon: Globe, label: 'Web Search', desc: 'Search the internet' },
+  { id: 'image-gen', icon: ImageIcon, label: 'Image Generation', desc: 'Create images with AI' },
+  { id: 'code-interp', icon: Code2, label: 'Code Interpreter', desc: 'Run & analyze code' },
+  // { id: 'data-store',  icon: Database,  label: 'Data Store',        desc: 'Query your data' },
 ];
 
 export default function ToolsPicker({ onClose }) {
