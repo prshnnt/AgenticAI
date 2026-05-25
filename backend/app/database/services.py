@@ -8,7 +8,7 @@ from ai.database.models import (
     ChatThread
 )
 
-class ChatThreadService:
+class ThreadService:
 
     @staticmethod
     def create_thread(
@@ -58,13 +58,8 @@ class ChatThreadService:
     @staticmethod
     def delete_thread(
         db:Session,
-        thread_id:int,
-        user_id:int
+        thread:ChatThread
     ) -> bool:
-        thread = db.query(ChatThread).filter(
-            ChatThread.id == thread_id,
-            ChatThread.user_id == user_id
-        ).first()
         if thread:
             db.delete(thread)
             db.commit()

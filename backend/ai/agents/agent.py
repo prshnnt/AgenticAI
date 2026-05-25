@@ -21,7 +21,7 @@ import logging
 from config import settings
 from ai.tools import websearch
 from ai.database.models import ChatThread , MessageRole 
-from ai.database.services import MessageService
+from app.database.services import MessageService
 
 logger = logging.getLogger(__name__)
 
