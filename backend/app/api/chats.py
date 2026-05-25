@@ -8,13 +8,12 @@ from app.schemas.chats import (
     ChatThreadCreate,
     ChatThreadResponse,
     ChatMessageCreate,
-    ChatMessageResponse,
     ChatHistoryResponse
 ) 
 from app.api.dependencies import get_current_user
 from app.database.models import User
 from ai.database.models import MessageRole
-from datetime import datetime , timezone
+from datetime import timezone
 from app.database.services import ThreadService , MessageService
 
 router = APIRouter(prefix='/chats',tags=['chats'])
