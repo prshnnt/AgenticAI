@@ -18,9 +18,18 @@
   scrollbar-color: var(--color-border) transparent;
 }
 
-.messageList::-webkit-scrollbar { width: 5px; }
-.messageList::-webkit-scrollbar-track { background: transparent; }
-.messageList::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 99px; }
+.messageList::-webkit-scrollbar {
+  width: 5px;
+}
+
+.messageList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.messageList::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 99px;
+}
 
 .mobileMenuBtn {
   position: absolute;
@@ -45,6 +54,11 @@
 }
 
 @media (max-width: 768px) {
-  .mobileMenuBtn { display: flex; }
-  .messageList { padding-top: 60px; }
+  .mobileMenuBtn {
+    display: flex;
+  }
+
+  .messageList {
+    padding-top: 60px;
+  }
 }

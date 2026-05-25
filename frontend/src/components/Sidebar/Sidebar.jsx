@@ -9,21 +9,21 @@ import styles from './Sidebar.module.css';
 
 const EXPLORER_ITEMS = [
   { icon: LayoutGrid, label: 'Artifacts' },
-  { icon: Workflow,   label: 'Workflows' },
-  { icon: Server,     label: 'MCP Servers' },
-  { icon: Cpu,        label: 'Skills' },
-  { icon: Users,      label: 'Agents' },
-  { icon: Puzzle,     label: 'Plugins' },
+  { icon: Workflow, label: 'Workflows' },
+  { icon: Server, label: 'MCP Servers' },
+  { icon: Cpu, label: 'Skills' },
+  { icon: Users, label: 'Agents' },
+  { icon: Puzzle, label: 'Plugins' },
 ];
 
 function groupConversations(convs) {
   const groups = { today: [], yesterday: [], week: [], older: [] };
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  
+
   const yesterdayStart = new Date(todayStart);
   yesterdayStart.setDate(yesterdayStart.getDate() - 1);
-  
+
   const weekStart = new Date(todayStart);
   weekStart.setDate(weekStart.getDate() - 7);
 
@@ -32,13 +32,13 @@ function groupConversations(convs) {
       groups[c.date].push(c);
       return;
     }
-    
+
     const ts = c.updated_at || c.created_at;
     if (!ts) {
       groups.older.push(c);
       return;
     }
-    
+
     const date = new Date(ts);
     if (isNaN(date.getTime())) {
       groups.older.push(c);
@@ -60,11 +60,11 @@ export default function Sidebar({
   onNewChat, onSelectConv, onRenameConv, onDeleteConv, onLogout
 }) {
   const [explorerOpen, setExplorerOpen] = useState(false);
-  const [searchQuery, setSearchQuery]   = useState('');
-  const [searchOpen, setSearchOpen]     = useState(false);
-  const [contextMenu, setContextMenu]   = useState(null); // {x,y,convId}
-  const [renamingId, setRenamingId]     = useState(null);
-  const [renameVal, setRenameVal]       = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [contextMenu, setContextMenu] = useState(null); // {x,y,convId}
+  const [renamingId, setRenamingId] = useState(null);
+  const [renameVal, setRenameVal] = useState('');
   const renameRef = useRef(null);
 
   useEffect(() => {
@@ -93,9 +93,9 @@ export default function Sidebar({
   }
 
   const contextActions = contextMenu ? [
-    { icon: Pencil,  label: 'Rename',  onClick: () => handleRename(contextMenu.convId) },
+    { icon: Pencil, label: 'Rename', onClick: () => handleRename(contextMenu.convId) },
     { icon: Archive, label: 'Archive', onClick: () => { setContextMenu(null); } },
-    { icon: Trash2,  label: 'Delete',  danger: true, onClick: () => { onDeleteConv(contextMenu.convId); setContextMenu(null); } },
+    { icon: Trash2, label: 'Delete', danger: true, onClick: () => { onDeleteConv(contextMenu.convId); setContextMenu(null); } },
   ] : [];
 
   const LABEL_MAP = { today: 'Today', yesterday: 'Yesterday', week: 'Last 7 Days', older: 'Older' };
@@ -108,7 +108,7 @@ export default function Sidebar({
           {open && (
             <div className={styles.brandMark}>
               <div className={styles.brandIcon}><Zap size={16} color="#fff" strokeWidth={2.5} /></div>
-              <span className={styles.brandName}>AgentOS</span>
+              <span className={styles.brandName}>Agentic AI</span>
             </div>
           )}
           <button className={styles.collapseBtn} onClick={onToggle} aria-label={open ? 'Collapse sidebar' : 'Expand sidebar'}>
