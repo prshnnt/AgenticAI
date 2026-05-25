@@ -1,30 +1,40 @@
 import os
 import sys
+import asyncio
 from dotenv import load_dotenv
 from typing import AsyncGenerator, Dict, List, Any, Optional
 from datetime import datetime, timezone
-
+from langchain_core.messages import (
+    BaseMessage,
+    HumanMessage,
+    AIMessage,
+    ToolMessage,
+    SystemMessage
+)
 from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import InMemorySaver
 from deepagents import create_deep_agent
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+import logging
 
 from config import settings
 from ai.tools import websearch
-from ai.database.models import ChatThread
+from ai.database.models import ChatThread , MessageRole 
+from ai.database.services import MessageService
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
+
 SYSTEM_PROMPT = "You are a helpful AI assistant."
 
-class StreamChunk(BaseModel):
+class StreamChunk(BaseModel): # thread_id , type , content , tool_name , 
     """A chunk of streamed response."""
     thread_id: Optional[str|int] = Field(None, description="Thread ID")
-    type: str = Field(..., description="Type of chunk: 'start', 'content', 'tool_call', 'tool_result', 'end', 'error'")
+    type: str = Field(..., description="Type of chunk: 'start', 'content', 'tool_name', 'end', 'error'")
     content: Optional[str] = Field(None, description="Content for content chunks")
     tool_name: Optional[str] = Field(None, description="Tool name for tool_call chunks")
-    tool_input: Optional[Dict[str, Any]] = Field(None, description="Tool input for tool_call chunks")
-    tool_output: Optional[str] = Field(None, description="Tool output for tool_result chunks")
     checkpointer_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
 
 
@@ -58,11 +68,8 @@ class DeepAgentService:
         # (Using InMemorySaver as a placeholder. Swap with AsyncRedisSaver/AsyncPostgresSaver as needed)
         self.checkpointer = InMemorySaver()
 
-        # # Default chat model
-        # self.chat_model = self.models["planner"]
-
         # Reusable subagents
-        self.subagents = []
+        self.subagents: Optional[List[Dict]] | None = None
 
         # Build ONCE
         self.agent = self._build_agent()
@@ -82,32 +89,108 @@ class DeepAgentService:
         thread: ChatThread,
         db: Session
     ) -> AsyncGenerator[str, None]:
-        start_chunk = StreamChunk(
+
+        yield StreamChunk(
             type="start",
             thread_id=thread.id,
             content=message,
             checkpointer_metadata={"timestamp": datetime.now(timezone.utc).isoformat()}
         )
-        yield f"data: {start_chunk.model_dump_json()}\n\n"
+
+        full_response = ""
+
         config = {
             "configurable": {
-                "thread_id": thread.id
+                "thread_id": thread.id,
+                "checkpointer_ns":""
             }
         }
 
-        async for event in self.agent.astream_events(
-            {
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": message
-                    }
-                ]
-            },
-            config=config,
-            version="v2"
-        ):
-            yield event
+        try:
+            async with asyncio.timeout(300):
+                async for event in self.agent.astream_events(
+                    {"messages": [HumanMessage(content=message)]},
+                    config=config,
+                    version="v2"
+                ):
+                    event_type = event.get("event","")
+                    event_data = event.get("data",{})
+                    
+                    if event_type == "on_chat_model_stream":
+                        chunk = event_data.get("content",{}).get("chunk",{})
+                        if chunk and hasattr(chunk,"content") and chunk.content:
+                            full_response += chunk.content
+                            yield StreamChunk(
+                                type="content",
+                                thread_id=thread.id,
+                                content=chunk.content,
+                                checkpointer_metadata={'timestamp': datetime.now(timezone.utc).isoformat()}
+                            )
+                    
+                    if event_type == "on_tool_start":
+                        tool_name = event.get("name", "unknown")
+                        yield StreamChunk(
+                            type="tool_name",
+                            thread_id=thread.id,
+                            tool_name=tool_name,
+                            checkpointer_metadata={'timestamp': datetime.now(timezone.utc).isoformat()}
+                        )
+                    
+                    if event_type == "on_tool_end":
+                        yield StreamChunk(
+                            type="tool_output",
+                            thread_id=thread.id,
+                            content=str(event_data.get("output")),
+                            checkpointer_metadata={'timestamp': datetime.now(timezone.utc).isoformat()}
+                        )
+                    
+                    if event_type == "on_chat_model_end":
+                        yield StreamChunk(
+                            type="end",
+                            thread_id=thread.id,
+                            content=str(event_data.get("content")),
+                            checkpointer_metadata={'timestamp': datetime.now(timezone.utc).isoformat()}
+                        )
+                    
+                    if event_type == "on_chat_model_error":
+                        yield StreamChunk(
+                            type="error",
+                            thread_id=thread.id,
+                            content=str(event_data.get("error")),
+                            checkpointer_metadata={'timestamp': datetime.now(timezone.utc).isoformat()}
+                        )
+        except Exception as e:
+            logger.exception("Error during agent stream for thread %s", thread.id)
+            yield StreamChunk(
+                type="error",
+                thread_id=thread.id,
+                content=str(e),
+                checkpointer_metadata={'timestamp': datetime.now(timezone.utc).isoformat()}
+            )
+            return
+
+        try:
+            if full_response:
+                MessageService.create_message(
+                    db=db,
+                    thread=thread,
+                    role=MessageRole.AI,
+                    content=full_response,
+                )
+        except Exception as db_err:
+            # Log but don't surface to client — the stream itself succeeded
+            logger.error(
+                "Failed to persist AI message for thread %s: %s",
+                thread.id, db_err
+            )
+
+        yield StreamChunk(
+            type='end',
+            thread_id=thread.id,
+            content=full_response,
+            checkpointer_metadata={'timestamp': datetime.now(timezone.utc).isoformat()}
+        )
+
 
 
 deep_agent_service = DeepAgentService()
