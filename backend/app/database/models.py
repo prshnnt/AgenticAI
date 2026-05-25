@@ -1,3 +1,4 @@
+from sqlalchemy.orm import relationship
 from app.database.session import Base
 
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
@@ -13,4 +14,10 @@ class User(Base):
     hashed_password = Column(String(255))
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),onupdate=lambda: datetime.now(timezone.utc))
+
+    chat_threads = relationship(
+    "ChatThread",
+    back_populates="user",
+    cascade="all, delete-orphan"
+    )

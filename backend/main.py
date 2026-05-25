@@ -2,14 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from app.database.session import init_db
-from app.api import auth
+from app.api import auth , chats
 import os
 
 # Create FastAPI app
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.VERSION,
-    description="AI Legal Assistant for Indian Legal System"
+    description="Agentic AI System"
 )
 
 # CORS middleware
@@ -23,6 +23,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth.router)
+app.include_router(chats.router)
 
 
 @app.on_event("startup")

@@ -76,7 +76,7 @@ class DeepAgentService:
 
     def _build_agent(self):
         return create_deep_agent(
-            model=self.chat_model,
+            model=self.models,
             tools=self.tools,
             subagents=self.subagents,
             system_prompt=SYSTEM_PROMPT,
@@ -93,7 +93,6 @@ class DeepAgentService:
         yield StreamChunk(
             type="start",
             thread_id=thread.id,
-            content=message,
             checkpointer_metadata={"timestamp": datetime.now(timezone.utc).isoformat()}
         )
 
@@ -117,7 +116,7 @@ class DeepAgentService:
                     event_data = event.get("data",{})
                     
                     if event_type == "on_chat_model_stream":
-                        chunk = event_data.get("content",{}).get("chunk",{})
+                        chunk = event_data.get("chunk",{})
                         if chunk and hasattr(chunk,"content") and chunk.content:
                             full_response += chunk.content
                             yield StreamChunk(

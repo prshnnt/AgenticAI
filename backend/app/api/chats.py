@@ -13,7 +13,7 @@ from app.schemas.chats import (
 from app.api.dependencies import get_current_user
 from app.database.models import User
 from ai.database.models import MessageRole
-from datetime import timezone
+from datetime import timezone , datetime
 from app.database.services import ThreadService , MessageService
 
 router = APIRouter(prefix='/chats',tags=['chats'])
@@ -49,11 +49,18 @@ def get_thread_history(
     Get chat history for a specific thread.
     """
     thread = ThreadService.get_thread_by_id(db=db,thread_id=thread_id,user_id=user.id)
-    messages = MessageService.get_messages_by_thread(db=db, thread=thread)
-    return {
-        "thread":thread,
-        "messages":messages
-    }
+    if thread:
+        
+        messages = MessageService.get_messages_by_thread(db=db, thread=thread)
+        return {
+            "thread":thread,
+            "messages":messages
+        }
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Chat thread not found"
+        )
 
 @router.delete("/threads/{thread_id}",status_code=status.HTTP_204_NO_CONTENT)
 def delete_thread(
@@ -86,10 +93,10 @@ async def send_message(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Chat thread not found"
         )
-    thread.updated_at = timezone.now()
+    thread.updated_at = datetime.now(timezone.utc)
     db.commit()
 
-    user_message = MessageService.create_message(
+    MessageService.create_message(
         db=db,
         thread=thread,
         role= MessageRole.HUMAN,
