@@ -2,10 +2,10 @@ import { Zap, Code2, Globe, Lightbulb, Cpu } from 'lucide-react';
 import styles from './WelcomeScreen.module.css';
 
 const SUGGESTIONS = [
-  { icon: Code2,      title: 'Write a FastAPI endpoint', sub: 'with authentication & validation' },
-  { icon: Globe,      title: 'Research a topic',         sub: 'web-grounded answers with sources' },
-  { icon: Lightbulb,  title: 'Brainstorm ideas',         sub: 'creative and strategic thinking' },
-  { icon: Cpu,        title: 'Debug my code',            sub: 'paste a snippet and I\'ll fix it' },
+  { icon: Code2, title: 'Write a FastAPI endpoint', sub: 'with authentication & validation' },
+  { icon: Globe, title: 'Research a topic', sub: 'web-grounded answers with sources' },
+  { icon: Lightbulb, title: 'Brainstorm ideas', sub: 'creative and strategic thinking' },
+  { icon: Cpu, title: 'Debug my code', sub: 'paste a snippet and I\'ll fix it' },
 ];
 
 export default function WelcomeScreen({ onSend }) {
@@ -18,7 +18,7 @@ export default function WelcomeScreen({ onSend }) {
           </div>
           <div className={styles.logoPulse} />
         </div>
-        <h1 className={styles.title}>AgentOS</h1>
+        <h1 className={styles.title}>Agentic AI</h1>
         <p className={styles.tagline}>Your intelligent agent workspace — ready to assist.</p>
       </div>
 
