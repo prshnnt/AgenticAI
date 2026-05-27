@@ -5,6 +5,15 @@ from enum import Enum
 from datetime import datetime
 from ai.database.models import MessageRole
 
+class StreamChunk(BaseModel): # thread_id , type , content , tool_name , 
+    """A chunk of streamed response."""
+    thread_id: Optional[str|int] = Field(None, description="Thread ID")
+    type: str = Field(..., description="Type of chunk: 'start', 'content', 'tool_name', 'end', 'error'")
+    content: Optional[str] = Field(None, description="Content for content chunks")
+    tool_name: Optional[str] = Field(None, description="Tool name for tool_call chunks")
+    checkpointer_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
+
+
 class ChatThreadCreate(BaseModel):
     title: Optional[str] = "New Chat"
 
@@ -23,6 +32,7 @@ class ChatMessageCreate(BaseModel):
     Role is ALWAYS HUMAN in the router.
     """
     content: str
+    allowed_tools: Optional[List[str]] = None
 
 class ChatMessageResponse(BaseModel):
     id: int 

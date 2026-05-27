@@ -94,7 +94,7 @@ export default function ChatInterface({ onLogout }) {
     }
   }, [token, onLogout]);
 
-  const handleSendMessage = useCallback(async (text, attachments) => {
+  const handleSendMessage = useCallback(async (text, attachments, allowedTools) => {
     if (!text.trim() && attachments.length === 0) return;
 
     // Add user message to state
@@ -132,7 +132,7 @@ export default function ChatInterface({ onLogout }) {
 
       // Add dummy assistant message shell
       const assistantMsgId = `assistant-${Date.now()}`;
-      const assistantMsg = { id: assistantMsgId, role: 'assistant', content: '', ts: Date.now() };
+      const assistantMsg = { id: assistantMsgId, role: 'assistant', content: '', steps: [], ts: Date.now() };
       setMessages(prev => [...prev, assistantMsg]);
 
       // 2. Call send message endpoint & start streaming
@@ -142,7 +142,7 @@ export default function ChatInterface({ onLogout }) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ content: text })
+        body: JSON.stringify({ content: text, allowed_tools: allowedTools })
       });
 
       if (response.status === 401) {
@@ -176,6 +176,25 @@ export default function ChatInterface({ onLogout }) {
               setMessages(prev => prev.map(m =>
                 m.id === assistantMsgId ? { ...m, content: accumulatedContent } : m
               ));
+            } else if (eventData.type === 'tool_name' && eventData.tool_name) {
+              setMessages(prev => prev.map(m =>
+                m.id === assistantMsgId
+                  ? { ...m, steps: [...(m.steps || []), { toolName: eventData.tool_name, status: 'running', output: '' }] }
+                  : m
+              ));
+            } else if (eventData.type === 'tool_output') {
+              setMessages(prev => prev.map(m => {
+                if (m.id !== assistantMsgId) return m;
+                const steps = [...(m.steps || [])];
+                if (steps.length > 0) {
+                  steps[steps.length - 1] = {
+                    ...steps[steps.length - 1],
+                    status: 'completed',
+                    output: eventData.content || ''
+                  };
+                }
+                return { ...m, steps };
+              }));
             } else if (eventData.type === 'error') {
               accumulatedContent += `\n[Error: ${eventData.content}]`;
               setMessages(prev => prev.map(m =>

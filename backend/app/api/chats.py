@@ -127,6 +127,7 @@ async def send_message(
     async def generate():
         async for event in deep_agent_service.stream(
             message=message.content,
+            allowed_tools = message.allowed_tools,
             thread=thread,
             db=db
         ):

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { Copy, RotateCcw, ThumbsUp, ThumbsDown, Zap, Check } from 'lucide-react';
+import { Copy, RotateCcw, ThumbsUp, ThumbsDown, Zap, Check, ChevronDown, ChevronRight, Wrench } from 'lucide-react';
 import { Marked } from 'marked';
 import styles from './MessageBubble.module.css';
 
@@ -28,6 +28,11 @@ function parseMarkdown(text) {
 export default function MessageBubble({ message, isStreaming }) {
   const [copied, setCopied] = useState(false);
   const [liked, setLiked]   = useState(null); // null | 'up' | 'down'
+  const [expandedSteps, setExpandedSteps] = useState({});
+
+  const toggleStep = useCallback((idx) => {
+    setExpandedSteps(prev => ({ ...prev, [idx]: !prev[idx] }));
+  }, []);
 
   const handleCopy = useCallback(async () => {
     await navigator.clipboard.writeText(message.content);
@@ -46,6 +51,43 @@ export default function MessageBubble({ message, isStreaming }) {
       )}
 
       <div className={`${styles.bubble} ${isUser ? styles.userBubble : styles.assistantBubble}`}>
+        {!isUser && message.steps?.length > 0 && (
+          <div className={styles.stepsContainer}>
+            {message.steps.map((step, idx) => {
+              const isRunning = step.status === 'running';
+              const isExpanded = !!expandedSteps[idx];
+              const hasOutput = !!step.output;
+              return (
+                <div key={idx} className={styles.step}>
+                  <div 
+                    className={`${styles.stepHeader} ${hasOutput ? styles.clickable : ''}`}
+                    onClick={() => hasOutput && toggleStep(idx)}
+                  >
+                    <div className={styles.stepInfo}>
+                      <Wrench size={14} className={isRunning ? styles.spinner : styles.stepIcon} />
+                      <span className={styles.stepTitle}>
+                        {isRunning ? 'Running tool ' : 'Used tool '}
+                        <strong>{step.toolName}</strong>
+                      </span>
+                    </div>
+                    <div className={styles.stepStatus}>
+                      {isRunning && <span className={styles.pulseDot} />}
+                      {!isRunning && hasOutput && (
+                        isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />
+                      )}
+                    </div>
+                  </div>
+                  {!isRunning && hasOutput && isExpanded && (
+                    <div className={styles.stepOutput}>
+                      <pre><code>{step.output}</code></pre>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
         {isUser ? (
           <div className={styles.userText}>{message.content}</div>
         ) : (

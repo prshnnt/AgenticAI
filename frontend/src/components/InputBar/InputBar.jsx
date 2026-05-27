@@ -4,12 +4,21 @@ import ToolsPicker from '../ToolsPicker/ToolsPicker';
 import styles from './InputBar.module.css';
 
 export default function InputBar({ onSend, streaming, onStop }) {
-  const [text, setText]               = useState('');
-  const [toolsOpen, setToolsOpen]     = useState(false);
-  const [recording, setRecording]     = useState(false);
-  const [attachments, setAttachments] = useState([]);
+  const [text, setText]                   = useState('');
+  const [toolsOpen, setToolsOpen]         = useState(false);
+  const [recording, setRecording]         = useState(false);
+  const [attachments, setAttachments]     = useState([]);
+  const [selectedTools, setSelectedTools] = useState(new Set());
   const textareaRef = useRef(null);
   const fileRef     = useRef(null);
+
+  const toggleTool = useCallback((id) => {
+    setSelectedTools(prev => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }, []);
 
   function handleInput(e) {
     setText(e.target.value);
@@ -31,11 +40,19 @@ export default function InputBar({ onSend, streaming, onStop }) {
   const submit = useCallback(() => {
     if (streaming) { onStop(); return; }
     if (!text.trim() && attachments.length === 0) return;
-    onSend(text.trim(), attachments);
+
+    // Map selected tools to backend names
+    const toolMap = {
+      'web-search': 'websearch',
+      'image-gen': 'image_gen',
+    };
+    const allowedTools = Array.from(selectedTools).map(id => toolMap[id] || id);
+
+    onSend(text.trim(), attachments, allowedTools);
     setText('');
     setAttachments([]);
     if (textareaRef.current) textareaRef.current.style.height = 'auto';
-  }, [text, attachments, streaming, onSend, onStop]);
+  }, [text, attachments, streaming, onSend, onStop, selectedTools]);
 
   function handleFileChange(e) {
     const files = Array.from(e.target.files || []);
@@ -97,15 +114,22 @@ export default function InputBar({ onSend, streaming, onStop }) {
           {/* Tools */}
           <div className={styles.toolsWrap}>
             <button
-              className={`${styles.iconBtn} ${toolsOpen ? styles.iconBtnActive : ''}`}
+              className={`${styles.iconBtn} ${toolsOpen || selectedTools.size > 0 ? styles.iconBtnActive : ''}`}
               onClick={() => setToolsOpen(v => !v)}
               title="Tools"
               aria-label="Toggle tools"
               type="button"
             >
               <Wrench size={16} strokeWidth={1.8} />
+              {selectedTools.size > 0 && <span className={styles.activeDot} aria-hidden="true" />}
             </button>
-            {toolsOpen && <ToolsPicker onClose={() => setToolsOpen(false)} />}
+            {toolsOpen && (
+              <ToolsPicker
+                selectedTools={selectedTools}
+                onToggleTool={toggleTool}
+                onClose={() => setToolsOpen(false)}
+              />
+            )}
           </div>
         </div>
 

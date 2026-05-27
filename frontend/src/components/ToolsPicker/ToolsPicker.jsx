@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Globe, ImageIcon, Code2, Database, X } from 'lucide-react';
 import styles from './ToolsPicker.module.css';
 
@@ -7,16 +6,8 @@ const TOOLS = [
   { id: 'image-gen', icon: ImageIcon, label: 'Image Generation', desc: 'Create images with AI' },
 ];
 
-export default function ToolsPicker({ onClose }) {
-  const [enabled, setEnabled] = useState(new Set());
+export default function ToolsPicker({ selectedTools, onToggleTool, onClose }) {
 
-  function toggle(id) {
-    setEnabled(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }
 
   return (
     <div className={styles.panel}>
@@ -28,19 +19,19 @@ export default function ToolsPicker({ onClose }) {
         {TOOLS.map(({ id, icon: Icon, label, desc }) => (
           <button
             key={id}
-            className={`${styles.item} ${enabled.has(id) ? styles.itemOn : ''}`}
-            onClick={() => toggle(id)}
+            className={`${styles.item} ${selectedTools.has(id) ? styles.itemOn : ''}`}
+            onClick={() => onToggleTool(id)}
             role="switch"
-            aria-checked={enabled.has(id)}
+            aria-checked={selectedTools.has(id)}
           >
-            <div className={`${styles.itemIcon} ${enabled.has(id) ? styles.itemIconOn : ''}`}>
+            <div className={`${styles.itemIcon} ${selectedTools.has(id) ? styles.itemIconOn : ''}`}>
               <Icon size={15} strokeWidth={1.8} />
             </div>
             <div className={styles.itemText}>
               <div className={styles.itemLabel}>{label}</div>
               <div className={styles.itemDesc}>{desc}</div>
             </div>
-            <div className={`${styles.toggle} ${enabled.has(id) ? styles.toggleOn : ''}`}>
+            <div className={`${styles.toggle} ${selectedTools.has(id) ? styles.toggleOn : ''}`}>
               <div className={styles.toggleThumb} />
             </div>
           </button>

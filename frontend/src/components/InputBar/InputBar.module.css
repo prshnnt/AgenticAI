@@ -109,6 +109,17 @@
   50%       { opacity: 0; }
 }
 
+.activeDot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 6px var(--color-accent);
+}
+
 /* Textarea */
 .textarea {
   flex: 1;

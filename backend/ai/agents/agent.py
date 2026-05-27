@@ -1,48 +1,27 @@
-import os
-import sys
 import asyncio
-from dotenv import load_dotenv
-from typing import AsyncGenerator, Dict, List, Any, Optional
+from typing import AsyncGenerator, Dict, Optional , List
 from datetime import datetime, timezone
-from langchain_core.messages import (
-    BaseMessage,
-    HumanMessage,
-    AIMessage,
-    ToolMessage,
-    SystemMessage
-)
+
+from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import InMemorySaver
 from deepagents import create_deep_agent
-from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-import logging
 
 from config import settings
-from ai.tools import websearch
+from ai.tools import get_tools
 from ai.database.models import ChatThread , MessageRole 
 from app.database.services import MessageService
+from app.schemas.chats import StreamChunk
+
+import logging
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
-
 load_dotenv()
 
 SYSTEM_PROMPT = "You are a helpful AI assistant."
 
-class StreamChunk(BaseModel): # thread_id , type , content , tool_name , 
-    """A chunk of streamed response."""
-    thread_id: Optional[str|int] = Field(None, description="Thread ID")
-    type: str = Field(..., description="Type of chunk: 'start', 'content', 'tool_name', 'end', 'error'")
-    content: Optional[str] = Field(None, description="Content for content chunks")
-    tool_name: Optional[str] = Field(None, description="Tool name for tool_call chunks")
-    checkpointer_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional metadata")
-
-
-def get_tools():
-    """
-    Get the tools based on the available modules.
-    """
-    return [websearch]
 
 def get_model():
     """
@@ -74,10 +53,10 @@ class DeepAgentService:
         # Build ONCE
         self.agent = self._build_agent()
 
-    def _build_agent(self):
+    def _build_agent(self, tools=None):
         return create_deep_agent(
             model=self.models,
-            tools=self.tools,
+            tools=tools if tools is not None else self.tools,
             subagents=self.subagents,
             system_prompt=SYSTEM_PROMPT,
             checkpointer=self.checkpointer
@@ -87,7 +66,8 @@ class DeepAgentService:
         self,
         message: str,
         thread: ChatThread,
-        db: Session
+        db: Session,
+        allowed_tools: Optional[List[str]] = None
     ) -> AsyncGenerator[str, None]:
 
         yield StreamChunk(
@@ -104,10 +84,16 @@ class DeepAgentService:
                 "checkpointer_ns":""
             }
         }
+        tools = get_tools()
+        if allowed_tools is not None:
+            tools = [tool for tool in tools if tool.name in allowed_tools]
+            agent = self._build_agent(tools=tools)
+        else:
+            agent = self.agent
 
         try:
             async with asyncio.timeout(300):
-                async for event in self.agent.astream_events(
+                async for event in agent.astream_events(
                     {"messages": [HumanMessage(content=message)]},
                     config=config,
                     version="v2"
