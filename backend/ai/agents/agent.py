@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
 from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.checkpoint.redis import AsyncRedisSaver
 from deepagents import create_deep_agent
 from sqlalchemy.orm import Session
 
@@ -45,7 +46,8 @@ class DeepAgentService:
 
         # Reusable persistent checkpointer 
         # (Using InMemorySaver as a placeholder. Swap with AsyncRedisSaver/AsyncPostgresSaver as needed)
-        self.checkpointer = InMemorySaver()
+        # self.checkpointer = InMemorySaver()
+        self.checkpointer = AsyncRedisSaver(redis_url=settings.REDIS_URI,)
 
         # Reusable subagents
         self.subagents: Optional[List[Dict]] | None = None

@@ -4,13 +4,13 @@ import ToolsPicker from '../ToolsPicker/ToolsPicker';
 import styles from './InputBar.module.css';
 
 export default function InputBar({ onSend, streaming, onStop }) {
-  const [text, setText]                   = useState('');
-  const [toolsOpen, setToolsOpen]         = useState(false);
-  const [recording, setRecording]         = useState(false);
-  const [attachments, setAttachments]     = useState([]);
+  const [text, setText] = useState('');
+  const [toolsOpen, setToolsOpen] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [attachments, setAttachments] = useState([]);
   const [selectedTools, setSelectedTools] = useState(new Set());
   const textareaRef = useRef(null);
-  const fileRef     = useRef(null);
+  const fileRef = useRef(null);
 
   const toggleTool = useCallback((id) => {
     setSelectedTools(prev => {
@@ -137,7 +137,7 @@ export default function InputBar({ onSend, streaming, onStop }) {
         <textarea
           ref={textareaRef}
           className={styles.textarea}
-          placeholder="Message AgentOS…"
+          placeholder="Message Agentic AI..."
           value={text}
           rows={1}
           onChange={handleInput}

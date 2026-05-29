@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     TAVILY_API_KEY:str = "your-tavily-api-key"
     OLLAMA_API_KEY:str = "your-ollama-api-key"
     REDIS_API_KEY_AGENT_MEMORY: str = "your-redis-api-key"
+    REDIS_URI: str = "redis://localhost:6379"
     
     # CORS
     CORS_ORIGINS: list = ["*"]

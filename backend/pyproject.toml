@@ -10,6 +10,7 @@ dependencies = [
     "dotenv>=0.9.9",
     "fastapi>=0.136.1",
     "langchain-ollama>=1.1.0",
+    "langgraph-checkpoint-redis>=0.4.1",
     "passlib>=1.7.4",
     "psycopg2>=2.9.12",
     "pydantic-settings>=2.14.1",
