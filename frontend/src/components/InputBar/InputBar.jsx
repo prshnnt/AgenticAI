@@ -56,7 +56,31 @@ export default function InputBar({ onSend, streaming, onStop }) {
 
   function handleFileChange(e) {
     const files = Array.from(e.target.files || []);
-    setAttachments(prev => [...prev, ...files]);
+    const allowed = [];
+    const rejected = [];
+    const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.csv', '.json', '.xls', '.xlsx'];
+    const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'];
+
+    for (const file of files) {
+      const type = file.type || '';
+      const name = file.name.toLowerCase();
+      const isImg = type.startsWith('image/') || IMAGE_EXTENSIONS.some(ext => name.endsWith(ext));
+      const isDoc = ALLOWED_EXTENSIONS.some(ext => name.endsWith(ext));
+
+      if (isImg || isDoc) {
+        allowed.push(file);
+      } else {
+        rejected.push(file.name);
+      }
+    }
+
+    if (rejected.length > 0) {
+      alert(`The following files were rejected:\n${rejected.join('\n')}\n\nOnly PDF, Image, DOCX, CSV, JSON, and Excel files are allowed.`);
+    }
+
+    if (allowed.length > 0) {
+      setAttachments(prev => [...prev, ...allowed]);
+    }
     e.target.value = '';
   }
 
@@ -97,7 +121,7 @@ export default function InputBar({ onSend, streaming, onStop }) {
           >
             <Paperclip size={16} strokeWidth={1.8} />
           </button>
-          <input ref={fileRef} type="file" multiple hidden onChange={handleFileChange} />
+          <input ref={fileRef} type="file" multiple hidden onChange={handleFileChange} accept=".pdf,image/*,.docx,.csv,.json,.xls,.xlsx" />
 
           {/* Voice */}
           <button

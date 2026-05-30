@@ -105,6 +105,32 @@ export default function ChatInterface({ onLogout }) {
     let currentConvId = activeConvId;
 
     try {
+      // Upload attachments to backend (simulation)
+      if (attachments && attachments.length > 0) {
+        for (const file of attachments) {
+          const formData = new FormData();
+          formData.append('file', file);
+          
+          const uploadRes = await fetch(`${API_BASE}/chats/upload`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            },
+            body: formData
+          });
+
+          if (uploadRes.status === 401) {
+            onLogout();
+            return;
+          }
+          if (!uploadRes.ok) {
+            throw new Error(`Failed to upload file: ${file.name}`);
+          }
+          const uploadData = await uploadRes.json();
+          console.log('Successfully simulated upload on backend:', uploadData);
+        }
+      }
+
       // 1. Create a thread if none is active
       if (!currentConvId) {
         const title = text.slice(0, 48) + (text.length > 48 ? '…' : '');

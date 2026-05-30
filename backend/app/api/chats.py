@@ -1,5 +1,5 @@
 from ai.agents.agent import deep_agent_service
-from fastapi import APIRouter , Depends , HTTPException , status
+from fastapi import APIRouter , Depends , HTTPException , status, UploadFile, File
 from fastapi.responses import StreamingResponse
 from typing import List
 from sqlalchemy.orm import Session
@@ -100,6 +100,23 @@ def rename_thread(
     db.commit()
     db.refresh(thread)
     return thread
+
+@router.post('/upload', status_code=status.HTTP_200_OK)
+async def upload_file(
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Simulate uploading a file.
+    Does not save the file anywhere.
+    """
+    return {
+        "filename": file.filename,
+        "content_type": file.content_type,
+        "status": "success",
+        "message": "File accepted successfully"
+    }
 
 @router.post("/threads/{thread_id}")
 async def send_message(
