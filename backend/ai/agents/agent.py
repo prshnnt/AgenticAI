@@ -50,7 +50,7 @@ class DeepAgentService:
         # Reusable persistent checkpointer 
         # (Using InMemorySaver as a placeholder. Swap with AsyncRedisSaver/AsyncPostgresSaver as needed)
         # self.checkpointer = InMemorySaver()
-        self.checkpointer = AsyncRedisSaver(redis_url=settings.REDIS_URI,)
+        self.checkpointer = AsyncRedisSaver(redis_url=settings.REDIS_URI)
 
         # Reusable subagents
         self.subagents = get_subagents()
