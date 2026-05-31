@@ -1,58 +1,176 @@
-# Agentic AI
+# Agentic AI Backend
 
-Agent backend using Python 3.12+ with uv package management.
+A production-ready, asynchronous agentic backend built with **Python 3.12+**, using **uv** for high-performance dependency management and **FastAPI** for real-time streaming interfaces.
 
-## Project Structure
+This system leverages multi-agent collaboration, persistent conversational memory checkpoints via Redis, and semantic web-search tools.
+
+---
+
+## 🏗️ Architecture Overview
+
+The backend uses a coordinator-agent pattern where a main controller coordinates with specialized subagents (such as a Researcher Subagent) using tools to fulfill user requests, keeping the primary context window lean and optimized.
+
+```mermaid
+graph TD
+    Client[Web Client] -->|HTTP / Server-Sent Events| API[FastAPI App]
+    API -->|Authenticate / Manage Threads| DB[(PostgreSQL Database)]
+    API -->|Initiate Chat Stream| AgentService[DeepAgentService]
+    AgentService -->|Coordinate Workflow| LangGraph[LangGraph Agent Engine]
+    LangGraph -->|Read/Write Checkpoints| RedisCheckpointer[(Redis Checkpointer)]
+    LangGraph -->|Delegate Work| Researcher[Researcher Subagent]
+    Researcher -->|Search Web| Tavily[Tavily Search API]
+    LangGraph -->|Stream SSE events| API
+```
+
+---
+
+## ✨ Key Features
+
+- **Multi-Agent Orchestration**: Built on top of the `deepagents` framework, featuring a main coordinator agent and a specialized `researcher-agent` subagent.
+- **Real-Time SSE Streaming**: Fully asynchronous Server-Sent Events (SSE) stream (`text/event-stream`) displaying real-time agent thoughts, tool start/end, outputs, and errors.
+- **Persistent Conversational Memory**: LangGraph checkpointing backed by a Redis checkpointer (`AsyncRedisSaver`) to maintain context and history across threads.
+- **Relational History Persistence**: Fully relational thread/message storage on **PostgreSQL** via **SQLAlchemy**.
+- **External Tooling Integration**: Real-time web search powered by the **Tavily API**.
+- **Secure Authentication**: User signup, login, password hashing (via `bcrypt` and `passlib`), and JWT-based authentication tokens.
+- **Blazing Fast Toolchain**: Utilizes `uv` for sub-second virtualenv setup, pinning, and lockfile synchronization (`uv.lock`).
+
+---
+
+## 📁 Project Structure
 
 ```
 backend/
-├── ai/                      # Agent logic
-│   ├── agents/              # Agent definitions
-│   ├── memory/              # Agent memory
-│   ├── prompts/             # Agent prompts
-│   ├── router/              # Router logic
-│   ├── tools/               # Agent tools
+├── ai/                          # Core AI and Agentic Logic
+│   ├── agents/                  # Agent definitions & configurations
+│   │   ├── subagents/           # Specialized worker subagents
+│   │   │   ├── __init__.py      # Subagent registry
+│   │   │   └── researcher.py    # Researcher subagent using Tavily
 │   │   ├── __init__.py
-│   │   ├── context.py       # Context management utilities
-│   │   └── websearch.py     # Web search via Tavily API
+│   │   └── agent.py             # Main DeepAgentService coordinator
+│   ├── database/                # AI-specific DB mappings
+│   │   └── models.py            # ChatThread and ChatMessage models
+│   ├── memory/                  # AI memory configuration (reserved)
+│   ├── prompts/                 # System and agent prompts
+│   │   └── SYSTEM_PROMPT.MD     # Global system instructions
+│   ├── router/                  # Agent routing logic (reserved)
+│   ├── tools/                   # Agent toolbelt
+│   │   ├── __init__.py          # Tool registry
+│   │   ├── context.py           # Context management utilities
+│   │   └── websearch.py         # Tavily web search tool
 │   └── __init__.py
-├── app/                     # Application code
-│   ├── api/                 # API endpoints
-│   ├── db/                  # Database layer
-│   ├── models/              # Data models
-│   └── schemas/             # Pydantic schemas
-├── test/                    # Tests
-├── utils/                   # Utility modules
-│   └── logger.py            # Logging utility
-├── .venv/                   # Virtual environment
-├── .ruff_cache/             # Ruff linter cache
-├── .python-version          # Python version
-├── .env                     # Environment variables (TAVILY_API_KEY)
-├── config.py                # Configuration handling
-├── main.py                  # Application entry point
-├── pyproject.toml           # Dependencies and metadata
-├── requirements.txt         # Pinned dependencies
-└── uv.lock                  # Lock file
+├── app/                         # FastAPI Web Application
+│   ├── api/                     # HTTP and SSE Endpoints
+│   │   ├── auth.py              # User authentication routes
+│   │   ├── chats.py             # Chat threads & message streams
+│   │   └── dependencies.py      # Dependency injection (e.g., auth, DB)
+│   ├── core/                    # Core configs and security
+│   │   └── auth.py              # Password hashing & JWT logic
+│   ├── database/                # Relational Database connection
+│   │   ├── models.py            # SQLAlchemy relational user model
+│   │   ├── services.py          # Relational CRUD queries for threads & messages
+│   │   └── session.py           # Session configuration & DB engine
+│   └── schemas/                 # Pydantic schemas (Request/Response)
+│       ├── chats.py             # Chat models and StreamChunk payloads
+│       └── user.py              # User authentication models
+├── tests/                       # Automated test suite
+│   └── __init__.py
+├── utils/                       # System utility modules
+│   └── logger.py                # Winston-like Python logger
+├── .env                         # Local environment configuration
+├── config.py                    # Environment settings schema (Pydantic-Settings)
+├── init_db.py                   # DB setup & sample user seeding script
+├── main.py                      # FastAPI app server initialization
+├── pyproject.toml               # Poetry/PEP 518 dependencies and tools
+├── requirements.txt             # Pinned pip requirements (autogenerated)
+└── uv.lock                      # UV deterministic lock file
 ```
 
-## Dependencies
+---
 
-- `deepagents>=0.6.1` - Agent framework
-- `dotenv>=0.9.9` - Environment variable management
-- `fastapi>=0.136.1` - Web framework
-- `pydantic-settings>=2.14.1` - Settings management
-- `sqlalchemy>=2.0.49` - Database ORM
-- `tavily-python>=0.7.24` - Web search API client
+## ⚙️ Environment Configuration
 
-## Development
+Create a `.env` file in the `backend/` directory with the following variables:
 
+| Variable | Description | Example / Default |
+| :--- | :--- | :--- |
+| `DATABASE_URL` | PostgreSQL connection string | `postgresql://postgres:pass@localhost:5432/agentic_ai` |
+| `REDIS_URI` | Redis database endpoint for memory | `redis://localhost:6379` |
+| `TAVILY_API_KEY` | Search API Key for Web research | `tvly-dev-...` |
+| `GOOGLE_API_KEY` | Gemini API Key for LLMs | `AIzaSy...` |
+| `GROQ_API_KEY` | Groq API Key | `gsk_...` |
+| `OLLAMA_BASE_URL` | Ollama model service endpoint | `https://api.ollama.com/` |
+| `OLLAMA_API_KEY` | API Key for Ollama endpoint | `your-ollama-api-key` |
+| `REDIS_API_KEY_AGENT_MEMORY` | API Key for secure Redis storage | `mem1_...` |
+
+---
+
+## 🚀 Getting Started
+
+### 1. Prerequisites
+Ensure you have Python 3.12+ and `uv` installed. If you do not have `uv`, install it via:
+```bash
+# macOS/Linux
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Windows (PowerShell)
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+### 2. Set Up Virtual Environment & Dependencies
+Initialize the environment and sync packages:
 ```bash
 cd backend
-uv run python main.py          # Run application
-uv run pytest                  # Run tests
-uv add <package>              # Add dependency
+uv venv
+uv pip sync uv.lock
 ```
 
-## Environment
+### 3. Initialize the Database
+Configure your `DATABASE_URL` in `.env` and run the seeding script:
+```bash
+uv run python init_db.py
+```
+This script will:
+- Establish a connection to your PostgreSQL database.
+- Create all required tables (`users`, `chat_threads`, `chat_messages`).
+- Seed a default demo user:
+  - **Username**: `demo`
+  - **Password**: `demo123`
 
-Requires `TAVILY_API_KEY` for web search functionality.
+### 4. Run the Development Server
+Start the FastAPI server:
+```bash
+uv run python main.py
+```
+By default, the server runs on `http://localhost:8000`. You can access the interactive API docs at `http://localhost:8000/docs`.
+
+### 5. Running Tests
+Run tests with `pytest`:
+```bash
+uv run pytest
+```
+
+---
+
+## 🔌 API Documentation Summary
+
+### **Authentication**
+- `POST /auth/register` - Create a new user account.
+- `POST /auth/login` - Authenticate credentials and retrieve a JWT Access Token.
+
+### **Chats & Agent Threads**
+- `POST /chats/threads` - Create a new conversation thread.
+- `GET /chats/threads` - List all chat threads for the authenticated user.
+- `GET /chats/threads/{thread_id}` - Retrieve complete history for a thread.
+- `PATCH /chats/threads/{thread_id}` - Rename or update a thread title.
+- `DELETE /chats/threads/{thread_id}` - Delete a chat thread and all its messages.
+- `POST /chats/threads/{thread_id}` - Send a user message and receive real-time streaming Server-Sent Events (`text/event-stream`) containing agent execution details and tool invocations.
+- `POST /chats/upload` - Mock endpoint for file uploads.
+
+---
+
+## 🛠️ Built With
+
+- **[FastAPI](https://fastapi.tiangolo.com/)** - Asynchronous web framework.
+- **[SQLAlchemy](https://www.sqlalchemy.org/)** - SQL Toolkit & Object Relational Mapper.
+- **[LangGraph](https://github.com/langchain-ai/langgraph)** - Building stateful, multi-actor LLM applications.
+- **[uv](https://github.com/astral-sh/uv)** - Blazing fast Python package installer and resolver.
