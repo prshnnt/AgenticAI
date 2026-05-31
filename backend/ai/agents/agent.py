@@ -50,7 +50,8 @@ class DeepAgentService:
         self.checkpointer = AsyncRedisSaver(redis_url=settings.REDIS_URI,)
 
         # Reusable subagents
-        self.subagents: Optional[List[Dict]] | None = None
+        from ai.agents.subagents import researcher_subagent
+        self.subagents = [researcher_subagent]
 
         # Build ONCE
         self.agent = self._build_agent()
