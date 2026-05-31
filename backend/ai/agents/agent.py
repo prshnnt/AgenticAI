@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from config import settings
 from ai.tools import get_tools
 from ai.database.models import ChatThread , MessageRole 
+from ai.agents.subagents import get_subagents
 from app.database.services import MessageService
 from app.schemas.chats import StreamChunk
 
@@ -50,8 +51,7 @@ class DeepAgentService:
         self.checkpointer = AsyncRedisSaver(redis_url=settings.REDIS_URI,)
 
         # Reusable subagents
-        from ai.agents.subagents import researcher_subagent
-        self.subagents = [researcher_subagent]
+        self.subagents = get_subagents()
 
         # Build ONCE
         self.agent = self._build_agent()

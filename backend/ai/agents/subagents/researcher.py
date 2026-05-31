@@ -22,6 +22,3 @@ researcher_subagent = {
     "tools": [websearch],
     "model": "google_genai:gemini-3.1-pro-preview",
 }
-
-# Keep alias for backward compatibility
-research_subagent = researcher_subagent

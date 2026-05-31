@@ -1,6 +1,4 @@
-from .researcher import researcher_subagent, research_subagent
+from .researcher import researcher_subagent
 
-__all__ = [
-    "researcher_subagent",
-    "research_subagent",
-]
+def get_subagents():
+    return [researcher_subagent]
