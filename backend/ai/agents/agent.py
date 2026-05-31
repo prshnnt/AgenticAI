@@ -10,9 +10,11 @@ from deepagents import create_deep_agent
 from sqlalchemy.orm import Session
 
 from config import settings
-from ai.tools import get_tools
+
 from ai.database.models import ChatThread , MessageRole 
+from ai.tools import get_tools
 from ai.agents.subagents import get_subagents
+
 from app.database.services import MessageService
 from app.schemas.chats import StreamChunk
 
