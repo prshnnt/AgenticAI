@@ -1,3 +1,4 @@
+from config import settings
 from ai.tools import websearch
 
 RESEARCHER_SYSTEM_PROMPT = """You are an expert Researcher Subagent. Your primary responsibility is to research topics on the web, synthesize findings, and provide concise, structured summaries.
@@ -20,5 +21,5 @@ researcher_subagent = {
     "description": "Performs targeted web search queries and returns synthesized research reports to prevent context bloat.",
     "system_prompt": RESEARCHER_SYSTEM_PROMPT,
     "tools": [websearch],
-    "model": "google_genai:gemini-3.1-pro-preview",
+    "model": f"ollama:{settings.ollama_model}",
 }

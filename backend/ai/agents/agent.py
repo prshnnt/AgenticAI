@@ -75,6 +75,11 @@ class DeepAgentService:
         allowed_tools: Optional[List[str]] = None
     ) -> AsyncGenerator[str, None]:
 
+        # Dynamically set up Redis search indices if not already done
+        if not hasattr(self, "_setup_done") or not self._setup_done:
+            await self.checkpointer.asetup()
+            self._setup_done = True
+
         yield StreamChunk(
             type="start",
             thread_id=thread.id,

@@ -142,13 +142,13 @@ async def send_message(
     )
 
     async def generate():
-        async for event in deep_agent_service.stream(
+        async for chunk in deep_agent_service.stream(
             message=message.content,
             allowed_tools = message.allowed_tools,
             thread=thread,
             db=db
         ):
-            yield f"data: {event.model_dump_json()}\n\n"
+            yield f"data: {chunk.model_dump_json()}\n\n"
     
     return StreamingResponse(
         generate(),
