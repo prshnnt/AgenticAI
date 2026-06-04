@@ -24,7 +24,11 @@ from dotenv import load_dotenv
 logger = logging.getLogger(__name__)
 load_dotenv()
 
-SYSTEM_PROMPT = "You are a helpful AI assistant."
+try:
+    from ai.prompts.SYSTEM_PROMPT import SYSTEM_PROMPT
+except:
+    SYSTEM_PROMPT = "You are a helpful AI assistant."
+    logger.warning("SYSTEM_PROMPT.py not found, using default system prompt.")
 
 
 def get_model():
@@ -90,7 +94,7 @@ class DeepAgentService:
 
         config = {
             "configurable": {
-                "thread_id": thread.id,
+                "thread_id": str(thread.id),
                 "checkpointer_ns":""
             }
         }
