@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import Sidebar from '../Sidebar/Sidebar';
 import ChatWindow from '../ChatWindow/ChatWindow';
+import ScratchpadPanel from '../ScratchpadPanel/ScratchpadPanel';
 import styles from './ChatInterface.module.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -11,6 +12,8 @@ export default function ChatInterface({ onLogout }) {
   const [conversations, setConversations] = useState([]);
   const [messages, setMessages] = useState([]);
   const [streaming, setStreaming] = useState(false);
+  const [scratchpadOpen, setScratchpadOpen] = useState(false);
+
 
   const activeReaderRef = useRef(null);
   const token = localStorage.getItem('access_token');
@@ -319,6 +322,9 @@ export default function ChatInterface({ onLogout }) {
     }
   }, [activeConvId, token, onLogout]);
 
+  const activeThread = conversations.find(c => c.id === activeConvId);
+  const activeTitle = activeThread ? activeThread.title : 'New Chat';
+
   return (
     <div className={styles.layout}>
       <Sidebar
@@ -336,11 +342,22 @@ export default function ChatInterface({ onLogout }) {
         messages={messages}
         streaming={streaming}
         activeConvId={activeConvId}
+        activeTitle={activeTitle}
+        scratchpadOpen={scratchpadOpen}
         onSendMessage={handleSendMessage}
         onStopStreaming={handleStopStreaming}
         onMenuOpen={() => setSidebarOpen(true)}
         sidebarOpen={sidebarOpen}
+        onToggleScratchpad={() => setScratchpadOpen(v => !v)}
       />
+      {scratchpadOpen && activeConvId && (
+        <ScratchpadPanel
+          threadId={activeConvId}
+          onClose={() => setScratchpadOpen(false)}
+          streaming={streaming}
+        />
+      )}
     </div>
   );
+
 }

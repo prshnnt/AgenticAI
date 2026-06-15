@@ -49,3 +49,14 @@ class ChatHistoryResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+class TodoItemSchema(BaseModel):
+    id: str
+    text: str
+    completed: bool
+    created_at: Optional[str] = None
+    completed_at: Optional[str] = None
+
+class ScratchpadResponse(BaseModel):
+    todos: List[TodoItemSchema]
+    notes: str

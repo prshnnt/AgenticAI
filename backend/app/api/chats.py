@@ -10,9 +10,14 @@ from app.schemas.chats import (
     ChatThreadCreate,
     ChatThreadResponse,
     ChatMessageCreate,
-    ChatHistoryResponse
+    ChatHistoryResponse,
+    ScratchpadResponse
 ) 
 from app.api.dependencies import get_current_user
+import json
+import redis.asyncio as aioredis
+from config import settings
+
 from app.database.models import User
 from ai.database.models import MessageRole
 from datetime import timezone , datetime
@@ -265,3 +270,59 @@ async def send_message(
             "X-Accel-Buffering": "no"
         }
     )
+
+@router.get("/threads/{thread_id}/scratchpad", response_model=ScratchpadResponse)
+async def get_scratchpad(
+    thread_id: int,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Retrieve the AI scratchpad (todos and notes) for a specific thread.
+    """
+    thread = ThreadService.get_thread_by_id(db=db, thread_id=thread_id, user_id=user.id)
+    if not thread:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Chat thread not found"
+        )
+    
+    key = f"agentic_ai:scratchpad:{thread_id}"
+    try:
+        async with aioredis.from_url(settings.REDIS_URI, decode_responses=True) as r:
+            raw = await r.get(key)
+            if raw:
+                return json.loads(raw)
+    except Exception as e:
+        logger.error(f"Error fetching scratchpad from Redis: {e}")
+    return {"todos": [], "notes": ""}
+
+@router.put("/threads/{thread_id}/scratchpad", response_model=ScratchpadResponse)
+async def update_scratchpad(
+    thread_id: int,
+    scratchpad_data: ScratchpadResponse,
+    user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Overwrite the AI scratchpad (todos and notes) for a specific thread.
+    """
+    thread = ThreadService.get_thread_by_id(db=db, thread_id=thread_id, user_id=user.id)
+    if not thread:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Chat thread not found"
+        )
+    
+    key = f"agentic_ai:scratchpad:{thread_id}"
+    try:
+        async with aioredis.from_url(settings.REDIS_URI, decode_responses=True) as r:
+            data = scratchpad_data.model_dump()
+            await r.set(key, json.dumps(data))
+            return scratchpad_data
+    except Exception as e:
+        logger.error(f"Error updating scratchpad in Redis: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Redis connection error: {e}"
+        )

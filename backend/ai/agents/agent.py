@@ -99,7 +99,7 @@ class DeepAgentService:
         }
         tools = get_tools()
         if allowed_tools is not None:
-            tools = [tool for tool in tools if tool.name in allowed_tools]
+            tools = [tool for tool in tools if tool.name in allowed_tools or tool.name.startswith("scratchpad_")]
             agent = self._build_agent(tools=tools)
         else:
             agent = self.agent

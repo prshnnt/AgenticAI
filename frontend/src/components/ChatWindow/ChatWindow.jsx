@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import WelcomeScreen from '../WelcomeScreen/WelcomeScreen';
 import MessageBubble from '../MessageBubble/MessageBubble';
 import InputBar from '../InputBar/InputBar';
-import { Menu } from 'lucide-react';
+import { Menu, ClipboardList } from 'lucide-react';
 import styles from './ChatWindow.module.css';
 
 export default function ChatWindow({
-  messages, streaming, activeConvId,
-  onSendMessage, onStopStreaming, onMenuOpen, sidebarOpen
+  messages, streaming, activeConvId, activeTitle, scratchpadOpen,
+  onSendMessage, onStopStreaming, onMenuOpen, sidebarOpen, onToggleScratchpad
 }) {
   const bottomRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
@@ -25,12 +25,29 @@ export default function ChatWindow({
 
   return (
     <main className={styles.window}>
-      {/* Mobile menu toggle */}
-      {!sidebarOpen && (
-        <button className={styles.mobileMenuBtn} onClick={onMenuOpen} aria-label="Open menu">
-          <Menu size={18} />
-        </button>
-      )}
+      {/* Header bar */}
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          {!sidebarOpen && (
+            <button className={styles.mobileMenuBtn} onClick={onMenuOpen} aria-label="Open menu">
+              <Menu size={18} />
+            </button>
+          )}
+          <h1 className={styles.threadTitle}>{activeConvId ? activeTitle : 'New Chat'}</h1>
+        </div>
+        <div className={styles.headerRight}>
+          {activeConvId && (
+            <button
+              className={`${styles.scratchpadBtn} ${scratchpadOpen ? styles.scratchpadBtnActive : ''}`}
+              onClick={onToggleScratchpad}
+              title="Toggle AI Scratchpad"
+            >
+              <ClipboardList size={14} />
+              <span>AI Scratchpad</span>
+            </button>
+          )}
+        </div>
+      </div>
 
       {messages.length === 0 ? (
         <WelcomeScreen onSend={onSendMessage} />
@@ -56,3 +73,4 @@ export default function ChatWindow({
     </main>
   );
 }
+
