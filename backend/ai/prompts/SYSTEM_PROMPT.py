@@ -250,8 +250,3 @@ The most effective collaborations happen when:
 
 I'm here to assist you with your tasks and look forward to working together to achieve your goals.
 """
-
-from ai.skills.scratchpad_skill import SCRATCHPAD_SKILL
-from ai.skills.todolist_skill import TODOLIST_SKILL
-
-SYSTEM_PROMPT = SYSTEM_PROMPT + "\n\n" + SCRATCHPAD_SKILL + "\n\n" + TODOLIST_SKILL

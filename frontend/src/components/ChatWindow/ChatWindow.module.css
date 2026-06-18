@@ -8,69 +8,6 @@
   background: var(--color-bg);
 }
 
-.header {
-  height: 56px;
-  min-height: 56px;
-  border-bottom: 1px solid var(--color-border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  background: rgba(17, 17, 26, 0.4);
-  backdrop-filter: blur(12px);
-  z-index: 5;
-}
-
-.headerLeft {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  overflow: hidden;
-}
-
-.threadTitle {
-  font-family: var(--font-display);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--color-text-primary);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  max-width: 300px;
-}
-
-.headerRight {
-  display: flex;
-  align-items: center;
-}
-
-.scratchpadBtn {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 6px 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--text-xs);
-  color: var(--color-text-secondary);
-  font-weight: 500;
-  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.scratchpadBtn:hover {
-  background: var(--color-surface-2);
-  border-color: var(--color-border-hover);
-  color: var(--color-text-primary);
-}
-
-.scratchpadBtnActive {
-  background: var(--color-accent-dim);
-  border-color: rgba(79, 142, 255, 0.4);
-  color: var(--color-accent);
-  box-shadow: 0 0 10px rgba(79, 142, 255, 0.1);
-}
-
 .messageList {
   flex: 1;
   overflow-y: auto;
@@ -95,6 +32,10 @@
 }
 
 .mobileMenuBtn {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 10;
   width: 36px;
   height: 36px;
   display: none;
@@ -115,5 +56,9 @@
 @media (max-width: 768px) {
   .mobileMenuBtn {
     display: flex;
+  }
+
+  .messageList {
+    padding-top: 60px;
   }
 }
