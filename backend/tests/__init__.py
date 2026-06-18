@@ -1,1 +1,1 @@
-# Test package for Agentic AI
+# backend/tests/__init__.py
