@@ -15,7 +15,7 @@ A premium, production-grade AI chat interface built with **React** and **Vite**.
 - **Fluid Navigation**: Collapsible sidebar that shrinks to a slim icon-only toolbar.
 - **History Management**: Grouped conversation history (Today, Yesterday, Last 7 Days, Older).
 - **Contextual Actions**: Inline renaming, archiving, and deletion with smooth animations.
-- **Feature Hub**: Slide-in "More" panel for Artifacts, Workflows, MCP Servers, and Plugins.
+- **Feature Hub**: Slide-in "More" panel for Artifacts, Workflows, Skills, Agents, and Plugins.
 
 ### ⌨️ Advanced Input Bar
 - **Dynamic Textarea**: Auto-expanding multi-line input bar.
