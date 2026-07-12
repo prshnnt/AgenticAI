@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import {
   Plus, Search, ChevronLeft, ChevronRight, Zap, Settings,
-  LayoutGrid, Workflow, Server, Cpu, Users, Puzzle,
+  LayoutGrid, Workflow, Cpu, Users, Puzzle,
   MessageSquare, MoreHorizontal, Pencil, Archive, Trash2, LogOut
 } from 'lucide-react';
 import ContextMenu from '../ContextMenu/ContextMenu';
@@ -10,7 +10,6 @@ import styles from './Sidebar.module.css';
 const EXPLORER_ITEMS = [
   { icon: LayoutGrid, label: 'Artifacts' },
   { icon: Workflow, label: 'Workflows' },
-  { icon: Server, label: 'MCP Servers' },
   { icon: Cpu, label: 'Skills' },
   { icon: Users, label: 'Agents' },
   { icon: Puzzle, label: 'Plugins' },
