@@ -32,7 +32,13 @@ except:
 
 def get_model():
     """
-    Get the model based on the model name.
+    Get the model based on the model name configured in settings.
+
+    Retrieves a ChatOllama instance using the model name, base URL, and a
+    temperature of 0 to ensure deterministic responses.
+
+    Returns:
+        ChatOllama: Configured Ollama chat model instance.
     """
     return ChatOllama(
         model=settings.ollama_model,
