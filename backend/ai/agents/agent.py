@@ -48,6 +48,14 @@ def get_model():
     
 
 class DeepAgentService:
+    """
+    Service for managing and interacting with the LangGraph Deep Agent.
+
+    This service initializes the LLM instance, retrieves relevant tools,
+    configures a persistent checkpointer (e.g., AsyncRedisSaver), and
+    composes the main conversational agent. It provides a stream endpoint
+    to stream agent execution events to the client.
+    """
 
     def __init__(self):
         # Reusable models
