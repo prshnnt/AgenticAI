@@ -76,6 +76,19 @@ class DeepAgentService:
         self.agent = self._build_agent()
 
     def _build_agent(self, tools=None):
+        """
+        Helper method to construct the deep agent state graph.
+
+        Instantiates the agent using the configured model, subagents,
+        system prompt, checkpointer, and a custom or default list of tools.
+
+        Args:
+            tools (list, optional): A list of tools to configure the agent with.
+                If None, uses the default pre-configured tools.
+
+        Returns:
+            Any: The compiled agent state graph.
+        """
         return create_deep_agent(
             model=self.models,
             tools=tools if tools is not None else self.tools,
