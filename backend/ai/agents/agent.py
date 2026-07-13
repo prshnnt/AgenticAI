@@ -104,6 +104,24 @@ class DeepAgentService:
         db: Session,
         allowed_tools: Optional[List[str]] = None
     ) -> AsyncGenerator[str, None]:
+        """
+        Stream agent execution events and final output for a user message.
+
+        Executes the agent workflow asynchronously, capturing LangGraph execution
+        events (model stream chunks, tool calls/returns, errors), yields them as
+        StreamChunk instances, and persists the final response in the database.
+
+        Args:
+            message (str): The user input message.
+            thread (ChatThread): The active chat thread model.
+            db (Session): SQLAlchemy database session.
+            allowed_tools (Optional[List[str]]): List of specific tool names that
+                the agent is allowed to invoke. If None, all tools are allowed.
+
+        Yields:
+            StreamChunk: Chunks representing different stages of execution (start,
+                content, tool_name, tool_output, error, and end).
+        """
 
         # Dynamically set up Redis search indices if not already done
         if not hasattr(self, "_setup_done") or not self._setup_done:
