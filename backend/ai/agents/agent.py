@@ -139,7 +139,7 @@ class DeepAgentService:
         config = {
             "configurable": {
                 "thread_id": str(thread.id),
-                "checkpointer_ns":""
+                "checkpoint_ns":""
             }
         }
         tools = get_tools()
