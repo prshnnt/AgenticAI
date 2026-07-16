@@ -82,7 +82,7 @@ class DeepAgentService:
         Instantiates the agent using the configured model, subagents,
         system prompt, checkpointer, and a custom or default list of tools.
 
-        Args:
+1        Args:
             tools (list, optional): A list of tools to configure the agent with.
                 If None, uses the default pre-configured tools.
 
