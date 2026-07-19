@@ -6,6 +6,7 @@ from langchain_core.messages import HumanMessage
 from langchain_ollama import ChatOllama
 from langgraph.checkpoint.redis import AsyncRedisSaver
 from deepagents import create_deep_agent
+from deepagents.backends.filesystem import FilesystemBackend
 from sqlalchemy.orm import Session
 
 from config import settings
@@ -92,6 +93,8 @@ class DeepAgentService:
         return create_deep_agent(
             model=self.models,
             tools=tools if tools is not None else self.tools,
+            backend=FilesystemBackend(root_dir="./"),
+            skills=["./ai/skills/"],
             subagents=self.subagents,
             system_prompt=SYSTEM_PROMPT,
             checkpointer=self.checkpointer
