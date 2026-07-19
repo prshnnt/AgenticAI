@@ -280,3 +280,6 @@ frontend.ps1
 backend.bat
 frontend.bat
 temp.txt
+
+# Reports
+Report.md
