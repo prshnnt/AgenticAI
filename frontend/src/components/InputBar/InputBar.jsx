@@ -1,5 +1,5 @@
-import { useState, useRef, useCallback } from 'react';
-import { Paperclip, Mic, Wrench, ArrowUp, Square } from 'lucide-react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { Paperclip, Mic, Wrench, ArrowUp, Square, AlertCircle, X } from 'lucide-react';
 import ToolsPicker from '../ToolsPicker/ToolsPicker';
 import styles from './InputBar.module.css';
 
@@ -9,8 +9,16 @@ export default function InputBar({ onSend, streaming, onStop }) {
   const [recording, setRecording] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [selectedTools, setSelectedTools] = useState(new Set());
+  const [fileError, setFileError] = useState('');
   const textareaRef = useRef(null);
   const fileRef = useRef(null);
+
+  // Auto-dismiss file error after 5s
+  useEffect(() => {
+    if (!fileError) return;
+    const t = setTimeout(() => setFileError(''), 5000);
+    return () => clearTimeout(t);
+  }, [fileError]);
 
   const toggleTool = useCallback((id) => {
     setSelectedTools(prev => {
@@ -75,7 +83,10 @@ export default function InputBar({ onSend, streaming, onStop }) {
     }
 
     if (rejected.length > 0) {
-      alert(`The following files were rejected:\n${rejected.join('\n')}\n\nOnly PDF, Image, DOCX, CSV, JSON, and Excel files are allowed.`);
+      const list = rejected.length === 1
+        ? rejected[0]
+        : `${rejected[0]} and ${rejected.length - 1} other${rejected.length > 2 ? 's' : ''}`;
+      setFileError(`Unsupported file: ${list}. PDF, image, DOCX, CSV, JSON, and Excel only.`);
     }
 
     if (allowed.length > 0) {
@@ -96,13 +107,34 @@ export default function InputBar({ onSend, streaming, onStop }) {
 
   return (
     <div className={styles.wrapper}>
+      {/* File error banner */}
+      {fileError && (
+        <div className={styles.fileError} role="alert" aria-live="polite">
+          <AlertCircle size={14} strokeWidth={2} aria-hidden="true" />
+          <span>{fileError}</span>
+          <button
+            className={styles.fileErrorClose}
+            onClick={() => setFileError('')}
+            aria-label="Dismiss error"
+          >
+            <X size={12} />
+          </button>
+        </div>
+      )}
+
       {/* Attachments preview */}
       {attachments.length > 0 && (
         <div className={styles.attachRow}>
           {attachments.map((f, i) => (
             <div key={i} className={styles.attachChip}>
               <span>{f.name}</span>
-              <button onClick={() => removeAttachment(i)} aria-label="Remove attachment">×</button>
+              <button
+                onClick={() => removeAttachment(i)}
+                aria-label={`Remove ${f.name}`}
+                type="button"
+              >
+                ×
+              </button>
             </div>
           ))}
         </div>

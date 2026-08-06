@@ -25,10 +25,23 @@
   --color-accent-dim:      rgba(79, 142, 255, 0.15);
   --color-accent-hover:    #6ba3ff;
   --color-accent-rgb:      79, 142, 255;
+  --color-accent-deep:     #2a5bdb;          /* gradient stop, brand */
+  --color-accent-soft:     rgba(79, 142, 255, 0.10);
+  --color-accent-line:     rgba(79, 142, 255, 0.25);
+  --color-accent-glow-1:   rgba(79, 142, 255, 0.06);
+  --color-accent-glow-2:   rgba(79, 142, 255, 0.18);
+  --color-accent-glow-3:   rgba(79, 142, 255, 0.30);
+  --color-accent-glow-4:   rgba(79, 142, 255, 0.42);
+  --color-danger-soft:     rgba(255, 95, 87, 0.10);
+  --color-danger-line:     rgba(255, 95, 87, 0.25);
+  --color-success-soft:    rgba(62, 207, 142, 0.60);
+  --color-success-glow:    rgba(62, 207, 142, 0.60);
   --color-success:         #3ecf8e;
   --color-warning:         #f5a623;
   --color-danger:          #ff5f57;
+  --color-danger-text:     #ff8080;
   --color-node:            rgba(79, 142, 255, 0.18);
+  --color-glass-highlight: rgba(255, 255, 255, 0.04);
 
   /* Typography */
   --font-display: 'Space Grotesk', system-ui, sans-serif;
@@ -102,6 +115,11 @@ body {
   line-height: var(--leading-normal);
   min-height: 100dvh;
   overflow-x: hidden;
+  text-wrap: pretty;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
 }
 
 #root {

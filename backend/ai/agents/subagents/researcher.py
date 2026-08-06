@@ -21,7 +21,7 @@ researcher_subagent = {
     "description": "Performs targeted web search queries and returns synthesized research reports to prevent context bloat.",
     "system_prompt": RESEARCHER_SYSTEM_PROMPT,
     "tools": [websearch],
-    "model": f"ollama:{settings.ollama_model}",
+    # "model": f"ollama:{settings.ollama_model}",
     # Require human approval before every Tavily call.
     # Replaces (not merges with) any inherited parent interrupt_on.
     "interrupt_on": {"websearch": True},

@@ -61,9 +61,13 @@
 }
 
 .item:hover { background: var(--color-surface); }
+.item:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
 .itemOn {
-  background: rgba(79,142,255,0.06);
-  border-color: rgba(79,142,255,0.2);
+  background: var(--color-accent-glow-1);
+  border-color: var(--color-accent-line);
 }
 
 .itemIcon {
@@ -83,7 +87,7 @@
 .itemIconOn {
   background: var(--color-accent-dim);
   color: var(--color-accent);
-  border-color: rgba(79,142,255,0.25);
+  border-color: var(--color-accent-line);
 }
 
 .itemText { flex: 1; }

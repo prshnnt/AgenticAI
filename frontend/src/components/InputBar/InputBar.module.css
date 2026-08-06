@@ -20,8 +20,8 @@
   align-items: center;
   gap: 6px;
   padding: 3px 10px;
-  background: rgba(79,142,255,0.1);
-  border: 1px solid rgba(79,142,255,0.25);
+  background: var(--color-accent-soft);
+  border: 1px solid var(--color-accent-line);
   border-radius: var(--radius-full);
   font-size: var(--text-xs);
   color: var(--color-accent);
@@ -53,7 +53,7 @@
 .bar:focus-within,
 .barFocused {
   border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.1), 0 4px 24px rgba(0,0,0,0.3);
+  box-shadow: 0 0 0 3px var(--color-accent-soft), 0 4px 24px rgba(0,0,0,0.3);
 }
 
 /* Left icons */
@@ -81,15 +81,21 @@
 .iconBtn:hover { background: var(--color-surface-2); color: var(--color-text-primary); }
 .iconBtnActive { background: var(--color-accent-dim); color: var(--color-accent); }
 
+.iconBtn:focus-visible,
+.sendBtn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
 /* Recording state */
 .recording {
   color: var(--color-danger) !important;
-  background: rgba(255,95,87,0.1) !important;
+  background: var(--color-danger-soft) !important;
   animation: recordPulse 1.2s ease-in-out infinite;
 }
 
 @keyframes recordPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255,95,87,0.4); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--color-danger-line); }
   50%       { box-shadow: 0 0 0 6px rgba(255,95,87,0); }
 }
 
@@ -149,16 +155,16 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-full);
-  background: linear-gradient(135deg, #2a5bdb 0%, #4f8eff 100%);
+  background: linear-gradient(135deg, var(--color-accent-deep) 0%, var(--color-accent) 100%);
   color: #fff;
   flex-shrink: 0;
   transition: transform 0.15s var(--ease-out), box-shadow 0.15s ease, background 0.15s ease;
-  box-shadow: 0 2px 10px rgba(79,142,255,0.35);
+  box-shadow: 0 2px 10px var(--color-accent-glow-3);
 }
 
 .sendBtn:hover:not(:disabled) {
   transform: scale(1.08);
-  box-shadow: 0 4px 16px rgba(79,142,255,0.5);
+  box-shadow: 0 4px 16px var(--color-accent-glow-4);
 }
 
 .sendBtn:active:not(:disabled) {
@@ -173,12 +179,12 @@
 }
 
 .stopBtn {
-  background: linear-gradient(135deg, #c0392b 0%, #ff5f57 100%);
-  box-shadow: 0 2px 10px rgba(255,95,87,0.35);
+  background: linear-gradient(135deg, #c0392b 0%, var(--color-danger) 100%);
+  box-shadow: 0 2px 10px var(--color-danger-line);
 }
 
 .stopBtn:hover:not(:disabled) {
-  box-shadow: 0 4px 16px rgba(255,95,87,0.5);
+  box-shadow: 0 4px 16px var(--color-danger-line);
 }
 
 /* Hint */
