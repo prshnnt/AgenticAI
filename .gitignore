@@ -283,3 +283,5 @@ temp.txt
 
 # Reports
 Report.md
+
+*.db
