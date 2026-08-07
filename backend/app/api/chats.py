@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from ai.agents.agent import deep_agent_service
+from ai.agents.agent import build_agent
 from fastapi import APIRouter , Depends , HTTPException , status, UploadFile, File
 from fastapi.responses import StreamingResponse
 from typing import List, Dict, Optional
@@ -184,12 +184,12 @@ class AgentTaskManager:
                 if not thread:
                     logger.error("Thread %s not found in background task", thread_id)
                     return
-
-                async for chunk in deep_agent_service.stream(
+                deep_agent_service = await build_agent()
+                async for chunk in deep_agent_service.astream(
                     message=message,
-                    thread=thread,
+                    thread_id=str(thread_id),
                     db=bg_db,
-                    allowed_tools=allowed_tools
+                    # allowed_tools=allowed_tools
                 ):
                     queues = self.task_queues.get(current_task, [])
                     for q in queues:
@@ -255,6 +255,7 @@ async def send_message(
                 yield f"data: {chunk.model_dump_json()}\n\n"
         finally:
             agent_task_manager.remove_queue(task, q)
+
     
     return StreamingResponse(
         generate(),
