@@ -202,13 +202,14 @@ export default function ChatInterface({ onLogout }) {
               setMessages(prev => prev.map(m =>
                 m.id === assistantMsgId ? { ...m, content: accumulatedContent } : m
               ));
-            } else if (eventData.type === 'tool_name' && eventData.tool_name) {
+            } else if ((eventData.type === 'tool_start' || eventData.type === 'tool_name') && (eventData.tool || eventData.tool_name)) {
+              const toolName = eventData.tool || eventData.tool_name;
               setMessages(prev => prev.map(m =>
                 m.id === assistantMsgId
-                  ? { ...m, steps: [...(m.steps || []), { toolName: eventData.tool_name, status: 'running', output: '' }] }
+                  ? { ...m, steps: [...(m.steps || []), { toolName, status: 'running', output: '' }] }
                   : m
               ));
-            } else if (eventData.type === 'tool_output') {
+            } else if (eventData.type === 'tool_end' || eventData.type === 'tool_output') {
               setMessages(prev => prev.map(m => {
                 if (m.id !== assistantMsgId) return m;
                 const steps = [...(m.steps || [])];
