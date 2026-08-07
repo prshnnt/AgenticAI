@@ -93,7 +93,7 @@ class DeepAgentService:
         return create_deep_agent(
             model=self.models,
             tools=tools if tools is not None else self.tools,
-            backend=FilesystemBackend(root_dir="./"),
+            backend=FilesystemBackend(root_dir="./sandbox/",virtual_mode=True),
             skills=["./ai/skills/"],
             subagents=self.subagents,
             system_prompt=SYSTEM_PROMPT,
