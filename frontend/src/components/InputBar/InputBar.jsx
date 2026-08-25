@@ -167,7 +167,7 @@ export default function InputBar({ onSend, streaming, onStop }) {
             {recording && <span className={styles.recordDot} aria-hidden="true" />}
           </button>
 
-          {/* Tools */}
+          {/* Tools
           <div className={styles.toolsWrap}>
             <button
               className={`${styles.iconBtn} ${toolsOpen || selectedTools.size > 0 ? styles.iconBtnActive : ''}`}
@@ -186,7 +186,7 @@ export default function InputBar({ onSend, streaming, onStop }) {
                 onClose={() => setToolsOpen(false)}
               />
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* Textarea */}
