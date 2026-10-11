@@ -1,4 +1,4 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -33,12 +33,16 @@ class Settings(BaseSettings):
     OLLAMA_API_KEY:str = "your-ollama-api-key"
     REDIS_API_KEY_AGENT_MEMORY: str = "your-redis-api-key"
     REDIS_URI: str = "redis://localhost:6379"
+    OPENROUTER: str = ""
+    NVIDIA_NIM: str = ""
     
     # CORS
     CORS_ORIGINS: list = ["*"]
     
-    class Config:
-        env_file = ".env"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
 
 settings = Settings()
