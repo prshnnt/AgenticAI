@@ -84,11 +84,15 @@ export default function LoginPage({ onAuthenticated }) {
         {/* Brand */}
         <div className={styles.brand}>
           <div className={styles.brandIcon} aria-hidden="true">
-            <Zap size={20} color="#fff" strokeWidth={2.5} />
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+              <circle cx="17" cy="17" r="17" fill="#9C86CE" />
+              <circle cx="17" cy="17" r="8.6" fill="#FFFFFF" />
+              <circle cx="17" cy="17" r="3.7" fill="#151519" />
+            </svg>
           </div>
           <div>
-            <div className={styles.brandName}>AgentOS</div>
-            <div className={styles.brandTag}>AI Platform</div>
+            <div className={styles.brandName}>Agentic AI</div>
+            <div className={styles.brandTag}>Intelligent Workspace</div>
           </div>
         </div>
 

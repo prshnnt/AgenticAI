@@ -280,7 +280,8 @@ frontend.ps1
 backend.bat
 frontend.bat
 temp.txt
-
+.opencode
+.agents
 # Reports
 Report.md
 

@@ -45,8 +45,12 @@ export default function MessageBubble({ message, isStreaming }) {
   return (
     <div className={`${styles.row} ${isUser ? styles.userRow : styles.assistantRow}`}>
       {!isUser && (
-        <div className={styles.avatar} aria-hidden="true">
-          <Zap size={13} color="#fff" strokeWidth={2.5} />
+        <div className={styles.avatar} aria-hidden="true" title="Agentic AI">
+          <svg width="20" height="20" viewBox="0 0 34 34" fill="none">
+            <circle cx="17" cy="17" r="17" fill="#9C86CE" />
+            <circle cx="17" cy="17" r="8.6" fill="#FFFFFF" />
+            <circle cx="17" cy="17" r="3.7" fill="#151519" />
+          </svg>
         </div>
       )}
 

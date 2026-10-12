@@ -13,35 +13,53 @@
 /* ---- Tokens ---- */
 :root {
   /* Colors */
-  --color-bg:              #0a0a0f;
-  --color-surface:         #11111a;
-  --color-surface-2:       #181825;
-  --color-border:          rgba(255, 255, 255, 0.07);
-  --color-border-hover:    rgba(255, 255, 255, 0.14);
-  --color-text-primary:    #e8e8f0;
-  --color-text-secondary:  rgba(232, 232, 240, 0.50);
-  --color-text-muted:      rgba(232, 232, 240, 0.28);
-  --color-accent:          #4f8eff;
-  --color-accent-dim:      rgba(79, 142, 255, 0.15);
-  --color-accent-hover:    #6ba3ff;
-  --color-accent-rgb:      79, 142, 255;
-  --color-accent-deep:     #2a5bdb;          /* gradient stop, brand */
-  --color-accent-soft:     rgba(79, 142, 255, 0.10);
-  --color-accent-line:     rgba(79, 142, 255, 0.25);
-  --color-accent-glow-1:   rgba(79, 142, 255, 0.06);
-  --color-accent-glow-2:   rgba(79, 142, 255, 0.18);
-  --color-accent-glow-3:   rgba(79, 142, 255, 0.30);
-  --color-accent-glow-4:   rgba(79, 142, 255, 0.42);
+  --color-bg:              #0a0d12;
+  --color-surface:         #131418;
+  --color-surface-2:       #1a1b20;
+  --color-border:          rgba(255, 255, 255, 0.08);
+  --color-border-hover:    rgba(255, 255, 255, 0.16);
+  --color-text-primary:    #f0f1f5;
+  --color-text-secondary:  rgba(240, 241, 245, 0.55);
+  --color-text-muted:      #8B8C8E;
+  --color-accent:          #F49D70;
+  --color-accent-dim:      rgba(244, 157, 112, 0.15);
+  --color-accent-hover:    #FBBC94;
+  --color-accent-rgb:      244, 157, 112;
+  --color-accent-deep:     #E88654;
+  --color-accent-soft:     rgba(244, 157, 112, 0.12);
+  --color-accent-line:     rgba(244, 157, 112, 0.30);
+  --color-accent-glow-1:   rgba(244, 157, 112, 0.08);
+  --color-accent-glow-2:   rgba(244, 157, 112, 0.20);
+  --color-accent-glow-3:   rgba(244, 157, 112, 0.35);
+  --color-accent-glow-4:   rgba(244, 157, 112, 0.50);
+  --color-brand-purple:    #9C86CE;
   --color-danger-soft:     rgba(255, 95, 87, 0.10);
   --color-danger-line:     rgba(255, 95, 87, 0.25);
-  --color-success-soft:    rgba(62, 207, 142, 0.60);
+  --color-success-soft:    rgba(62, 207, 142, 0.15);
   --color-success-glow:    rgba(62, 207, 142, 0.60);
   --color-success:         #3ecf8e;
   --color-warning:         #f5a623;
   --color-danger:          #ff5f57;
   --color-danger-text:     #ff8080;
-  --color-node:            rgba(79, 142, 255, 0.18);
-  --color-glass-highlight: rgba(255, 255, 255, 0.04);
+  --color-node:            rgba(156, 134, 206, 0.25);
+  --color-glass-highlight: rgba(255, 255, 255, 0.06);
+
+  /* Composer Card & Send Tokens */
+  --card-glass-bg:         rgba(41, 41, 43, 0.955);
+  --card-glass-border:     rgba(214, 228, 255, 0.14);
+  --card-glass-shadow:     0 20px 50px rgba(0, 0, 0, 0.35), inset 0 0 0 1px rgba(214, 228, 255, 0.08);
+  --color-send-start:      #FBBC94;
+  --color-send-mid:        #F49D70;
+  --color-send-end:        #E88654;
+  --gradient-send:         linear-gradient(163deg, #FBBC94 0%, #F49D70 46%, #E88654 100%);
+  --shadow-send:           0 3px 12px rgba(210, 110, 60, 0.34);
+  --chip-bg:               linear-gradient(180deg, rgba(255, 255, 255, 0.088) 0%, rgba(255, 255, 255, 0.050) 45%, rgba(255, 255, 255, 0.038) 100%);
+  --chip-border:           rgba(255, 255, 255, 0.05);
+  --chip-hover-bg:         linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.07) 100%);
+  --chip-color:            #909093;
+  --chip-hover-color:      #c8c8cb;
+  --color-model:           #98999C;
+  --color-attach:          #A9AAAD;
 
   /* Typography */
   --font-display: 'Space Grotesk', system-ui, sans-serif;

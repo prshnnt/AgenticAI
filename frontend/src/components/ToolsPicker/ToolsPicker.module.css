@@ -2,11 +2,13 @@
   position: absolute;
   bottom: calc(100% + 10px);
   left: 0;
-  width: 260px;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border-hover);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  width: 270px;
+  background: rgba(28, 28, 32, 0.95);
+  backdrop-filter: blur(24px) saturate(112%);
+  -webkit-backdrop-filter: blur(24px) saturate(112%);
+  border: 1px solid rgba(214, 228, 255, 0.12);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
   overflow: hidden;
   animation: popUp 0.18s var(--ease-spring) both;
   z-index: 50;
@@ -21,16 +23,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px 8px;
-  border-bottom: 1px solid var(--color-border);
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .title {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.1em;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: #8B8C8E;
 }
 
 .closeBtn {
@@ -39,14 +41,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
-  color: var(--color-text-muted);
+  border-radius: 6px;
+  color: #8B8C8E;
   transition: background 0.12s ease, color 0.12s ease;
 }
 
-.closeBtn:hover { background: var(--color-surface); color: var(--color-text-primary); }
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
 
-.list { padding: 6px; display: flex; flex-direction: column; gap: 2px; }
+.list {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
 
 .item {
   display: flex;
@@ -54,54 +64,60 @@
   gap: 10px;
   width: 100%;
   padding: 8px 10px;
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   border: 1px solid transparent;
   transition: background 0.14s ease, border-color 0.14s ease;
   text-align: left;
 }
 
-.item:hover { background: var(--color-surface); }
+.item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
 .item:focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid #FBBC94;
   outline-offset: -2px;
 }
+
 .itemOn {
-  background: var(--color-accent-glow-1);
-  border-color: var(--color-accent-line);
+  background: rgba(244, 157, 112, 0.10);
+  border-color: rgba(244, 157, 112, 0.25);
 }
 
 .itemIcon {
   width: 32px;
   height: 32px;
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-muted);
+  color: #8B8C8E;
   flex-shrink: 0;
   transition: background 0.14s ease, color 0.14s ease;
 }
 
 .itemIconOn {
-  background: var(--color-accent-dim);
-  color: var(--color-accent);
-  border-color: var(--color-accent-line);
+  background: rgba(244, 157, 112, 0.18);
+  color: #FBBC94;
+  border-color: rgba(244, 157, 112, 0.35);
 }
 
-.itemText { flex: 1; }
+.itemText {
+  flex: 1;
+}
 
 .itemLabel {
   font-size: var(--text-xs);
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-weight: 500;
+  color: #ffffff;
   font-family: var(--font-display);
 }
 
 .itemDesc {
   font-size: 0.68rem;
-  color: var(--color-text-muted);
+  color: #8B8C8E;
 }
 
 /* Toggle switch */
@@ -109,13 +125,15 @@
   width: 32px;
   height: 18px;
   border-radius: 99px;
-  background: var(--color-border);
+  background: rgba(255, 255, 255, 0.12);
   position: relative;
   flex-shrink: 0;
   transition: background 0.2s ease;
 }
 
-.toggleOn { background: var(--color-accent); }
+.toggleOn {
+  background: #F49D70;
+}
 
 .toggleThumb {
   position: absolute;
@@ -124,9 +142,11 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
-  background: #fff;
+  background: #ffffff;
   transition: transform 0.2s var(--ease-spring);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-.toggleOn .toggleThumb { transform: translateX(14px); }
+.toggleOn .toggleThumb {
+  transform: translateX(14px);
+}

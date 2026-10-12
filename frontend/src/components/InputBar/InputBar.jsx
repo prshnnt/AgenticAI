@@ -1,15 +1,15 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Paperclip, Mic, Wrench, ArrowUp, Square, AlertCircle, X } from 'lucide-react';
-import ToolsPicker from '../ToolsPicker/ToolsPicker';
+import { Paperclip, Mic, ArrowUp, Square, AlertCircle, X, Globe, Sparkles, Monitor, ChevronDown } from 'lucide-react';
 import styles from './InputBar.module.css';
 
 export default function InputBar({ onSend, streaming, onStop }) {
   const [text, setText] = useState('');
-  const [toolsOpen, setToolsOpen] = useState(false);
   const [recording, setRecording] = useState(false);
   const [attachments, setAttachments] = useState([]);
   const [selectedTools, setSelectedTools] = useState(new Set());
   const [fileError, setFileError] = useState('');
+  const [selectedModel, setSelectedModel] = useState('Sonnet 4.5');
+  const [modelMenuOpen, setModelMenuOpen] = useState(false);
   const textareaRef = useRef(null);
   const fileRef = useRef(null);
 
@@ -30,7 +30,6 @@ export default function InputBar({ onSend, streaming, onStop }) {
 
   function handleInput(e) {
     setText(e.target.value);
-    // Auto-resize
     const ta = textareaRef.current;
     if (ta) {
       ta.style.height = 'auto';
@@ -46,7 +45,10 @@ export default function InputBar({ onSend, streaming, onStop }) {
   }
 
   const submit = useCallback(() => {
-    if (streaming) { onStop(); return; }
+    if (streaming) {
+      onStop();
+      return;
+    }
     if (!text.trim() && attachments.length === 0) return;
 
     // Map selected tools to backend names
@@ -140,79 +142,136 @@ export default function InputBar({ onSend, streaming, onStop }) {
         </div>
       )}
 
-      <div className={`${styles.bar} ${toolsOpen ? styles.barFocused : ''}`}>
-        {/* Left icons */}
-        <div className={styles.leftIcons}>
-          {/* Attach */}
-          <button
-            className={styles.iconBtn}
-            onClick={() => fileRef.current?.click()}
-            title="Attach file"
-            aria-label="Attach file"
-            type="button"
-          >
-            <Paperclip size={16} strokeWidth={1.8} />
-          </button>
-          <input ref={fileRef} type="file" multiple hidden onChange={handleFileChange} accept=".pdf,image/*,.docx,.csv,.json,.xls,.xlsx" />
-
-          {/* Voice */}
-          <button
-            className={`${styles.iconBtn} ${recording ? styles.recording : ''}`}
-            onClick={toggleRecording}
-            title={recording ? 'Stop recording' : 'Voice input'}
-            aria-label={recording ? 'Stop recording' : 'Start voice input'}
-            type="button"
-          >
-            <Mic size={16} strokeWidth={1.8} />
-            {recording && <span className={styles.recordDot} aria-hidden="true" />}
-          </button>
-
-          {/* Tools
-          <div className={styles.toolsWrap}>
-            <button
-              className={`${styles.iconBtn} ${toolsOpen || selectedTools.size > 0 ? styles.iconBtnActive : ''}`}
-              onClick={() => setToolsOpen(v => !v)}
-              title="Tools"
-              aria-label="Toggle tools"
-              type="button"
-            >
-              <Wrench size={16} strokeWidth={1.8} />
-              {selectedTools.size > 0 && <span className={styles.activeDot} aria-hidden="true" />}
-            </button>
-            {toolsOpen && (
-              <ToolsPicker
-                selectedTools={selectedTools}
-                onToggleTool={toggleTool}
-                onClose={() => setToolsOpen(false)}
-              />
-            )}
-          </div> */}
-        </div>
-
-        {/* Textarea */}
+      {/* Glassmorphic Composer Card */}
+      <div className={styles.card}>
+        {/* Top Band: Textarea */}
         <textarea
           ref={textareaRef}
           className={styles.textarea}
-          placeholder="Message Agentic AI..."
+          placeholder="Describe an app or task to build..."
           value={text}
           rows={1}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
           aria-label="Message input"
-          disabled={false}
         />
 
-        {/* Send / Stop button */}
-        <button
-          id="btn-send"
-          className={`${styles.sendBtn} ${streaming ? styles.stopBtn : ''} ${!canSend && !streaming ? styles.sendDisabled : ''}`}
-          onClick={submit}
-          aria-label={streaming ? 'Stop generating' : 'Send message'}
-          type="button"
-          disabled={!canSend && !streaming}
-        >
-          {streaming ? <Square size={14} strokeWidth={2.5} /> : <ArrowUp size={16} strokeWidth={2.5} />}
-        </button>
+        {/* Bottom Band: Toolbar Row */}
+        <div className={styles.tools}>
+          {/* Left Chips Strip */}
+          <div className={styles.chips}>
+            <button
+              type="button"
+              className={styles.chip}
+              onClick={() => fileRef.current?.click()}
+              title="Attach Screens / Files"
+            >
+              <Monitor size={14} strokeWidth={2} />
+              <span>Attach Screens</span>
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.chip} ${selectedTools.has('web-search') ? styles.chipActive : ''}`}
+              onClick={() => toggleTool('web-search')}
+              title="Toggle Web Search"
+            >
+              <Globe size={13} strokeWidth={2} />
+              <span>Web Search</span>
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.chip} ${selectedTools.has('image-gen') ? styles.chipActive : ''}`}
+              onClick={() => toggleTool('image-gen')}
+              title="Toggle Image Generation"
+            >
+              <Sparkles size={13} strokeWidth={2} />
+              <span>Image Gen</span>
+            </button>
+          </div>
+
+          {/* Right Cluster */}
+          <div className={styles.rightCluster}>
+            {/* Model Selector */}
+            <div className={styles.modelWrap}>
+              <button
+                type="button"
+                className={styles.modelBtn}
+                onClick={() => setModelMenuOpen(v => !v)}
+                title="Select Model"
+              >
+                <span>{selectedModel}</span>
+                <ChevronDown size={11} strokeWidth={2.2} />
+              </button>
+
+              {modelMenuOpen && (
+                <div className={styles.modelDropdown}>
+                  {['Sonnet 4.5', 'Claude 3.7', 'GPT-4o', 'DeepSeek-R1'].map(m => (
+                    <button
+                      key={m}
+                      type="button"
+                      className={`${styles.modelOption} ${m === selectedModel ? styles.modelOptionActive : ''}`}
+                      onClick={() => {
+                        setSelectedModel(m);
+                        setModelMenuOpen(false);
+                      }}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Paperclip button */}
+            <button
+              type="button"
+              className={styles.attachBtn}
+              onClick={() => fileRef.current?.click()}
+              title="Attach files"
+              aria-label="Attach files"
+            >
+              <Paperclip size={18} strokeWidth={1.8} />
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              multiple
+              hidden
+              onChange={handleFileChange}
+              accept=".pdf,image/*,.docx,.csv,.json,.xls,.xlsx"
+            />
+
+            {/* Voice button */}
+            <button
+              type="button"
+              className={`${styles.voiceBtn} ${recording ? styles.recording : ''}`}
+              onClick={toggleRecording}
+              title={recording ? 'Stop voice recording' : 'Voice input'}
+              aria-label={recording ? 'Stop voice recording' : 'Voice input'}
+            >
+              <Mic size={17} strokeWidth={1.8} />
+              {recording && <span className={styles.recordDot} aria-hidden="true" />}
+            </button>
+
+            {/* Orange Circular Send Button */}
+            <button
+              id="btn-send"
+              type="button"
+              className={`${styles.sendBtn} ${streaming ? styles.stopBtn : ''} ${!canSend && !streaming ? styles.sendDisabled : ''}`}
+              onClick={submit}
+              aria-label={streaming ? 'Stop generating' : 'Build it'}
+              disabled={!canSend && !streaming}
+            >
+              {streaming ? (
+                <Square size={14} strokeWidth={2.5} fill="currentColor" />
+              ) : (
+                <ArrowUp size={16} strokeWidth={2.5} />
+              )}
+            </button>
+          </div>
+        </div>
       </div>
 
       <p className={styles.hint}>Shift+Enter for new line · Enter to send</p>

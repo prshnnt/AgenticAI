@@ -104,10 +104,24 @@ export default function Sidebar({
       <aside className={`${styles.sidebar} ${open ? styles.open : styles.collapsed}`}>
         {/* Header */}
         <div className={styles.header}>
-          {open && (
+          {open ? (
             <div className={styles.brandMark}>
-              <div className={styles.brandIcon}><Zap size={16} color="#fff" strokeWidth={2.5} /></div>
+              <div className={styles.brandIcon}>
+                <svg width="24" height="24" viewBox="0 0 34 34" fill="none">
+                  <circle cx="17" cy="17" r="17" fill="#9C86CE" />
+                  <circle cx="17" cy="17" r="8.6" fill="#FFFFFF" />
+                  <circle cx="17" cy="17" r="3.7" fill="#151519" />
+                </svg>
+              </div>
               <span className={styles.brandName}>Agentic AI</span>
+            </div>
+          ) : (
+            <div className={styles.collapsedBrandIcon} title="Agentic AI">
+              <svg width="22" height="22" viewBox="0 0 34 34" fill="none">
+                <circle cx="17" cy="17" r="17" fill="#9C86CE" />
+                <circle cx="17" cy="17" r="8.6" fill="#FFFFFF" />
+                <circle cx="17" cy="17" r="3.7" fill="#151519" />
+              </svg>
             </div>
           )}
           <button className={styles.collapseBtn} onClick={onToggle} aria-label={open ? 'Collapse sidebar' : 'Expand sidebar'}>

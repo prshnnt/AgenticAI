@@ -59,7 +59,7 @@ export default function NeuralCanvas() {
           if (dist < CONNECTION_DISTANCE) {
             const alpha = (1 - dist / CONNECTION_DISTANCE) * 0.18;
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(79, 142, 255, ${alpha})`;
+            ctx.strokeStyle = `rgba(244, 157, 112, ${alpha * 0.9})`;
             ctx.lineWidth   = 0.8;
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
@@ -75,8 +75,8 @@ export default function NeuralCanvas() {
 
         // Outer glow
         const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, pulsedR * 5);
-        grd.addColorStop(0, `rgba(79, 142, 255, ${alpha * 0.6})`);
-        grd.addColorStop(1, 'rgba(79, 142, 255, 0)');
+        grd.addColorStop(0, `rgba(156, 134, 206, ${alpha * 0.5})`);
+        grd.addColorStop(1, 'rgba(156, 134, 206, 0)');
         ctx.beginPath();
         ctx.arc(n.x, n.y, pulsedR * 5, 0, Math.PI * 2);
         ctx.fillStyle = grd;
@@ -85,7 +85,7 @@ export default function NeuralCanvas() {
         // Core dot
         ctx.beginPath();
         ctx.arc(n.x, n.y, pulsedR, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(79, 142, 255, ${alpha + 0.3})`;
+        ctx.fillStyle = `rgba(251, 188, 148, ${alpha + 0.3})`;
         ctx.fill();
       }
 
