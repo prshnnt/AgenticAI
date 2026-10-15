@@ -12,6 +12,7 @@ dependencies = [
     "langchain-community>=0.4.2",
     "langchain-ollama>=1.1.0",
     "langgraph-checkpoint-redis>=0.4.1",
+    "laya>=0.4.8",
     "passlib>=1.7.4",
     "psycopg2>=2.9.12",
     "pydantic-settings>=2.14.1",
